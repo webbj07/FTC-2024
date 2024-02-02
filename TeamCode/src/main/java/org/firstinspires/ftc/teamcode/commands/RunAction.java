@@ -3,24 +3,14 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.Subsystem;
+import com.arcrobotics.ftclib.command.CommandBase;
 
-import java.util.Set;
-
-public class RunAction implements Command {
+public class RunAction extends CommandBase {
     private final Action action;
-    private final Set<Subsystem> requirements;
     private boolean finished = false;
 
-    public RunAction(Action action, Set<Subsystem> requirements) {
+    public RunAction(Action action) {
         this.action = action;
-        this.requirements = requirements;
-    }
-
-    @Override
-    public Set<Subsystem> getRequirements() {
-        return requirements;
     }
 
     @Override

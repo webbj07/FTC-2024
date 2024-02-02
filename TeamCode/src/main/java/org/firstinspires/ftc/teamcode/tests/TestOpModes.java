@@ -29,5 +29,7 @@ public final class TestOpModes {
         manager.register(metaForClass(SelfDriveTest.class), SelfDriveTest.class);
         manager.register(metaForClass(SplineTest.class), SplineTest.class);
         manager.register(metaForClass(SplineTestEx.class), SplineTestEx.class);
+        manager.register(metaForClass(RobotAutoDriveToAprilTag.class), RobotAutoDriveToAprilTag.class);
+        manager.register(metaForClass(ServoTest.class), ServoTest.class);
     }
 }

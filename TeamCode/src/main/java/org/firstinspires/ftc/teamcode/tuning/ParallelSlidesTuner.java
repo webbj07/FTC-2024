@@ -3,10 +3,15 @@ package org.firstinspires.ftc.teamcode.tuning;
 import static org.firstinspires.ftc.teamcode.subsystem.Lift.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.subsystem.Lift.MAX_VEL;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 import org.firstinspires.ftc.teamcode.util.NanoClock;
@@ -20,15 +25,19 @@ public final class ParallelSlidesTuner extends LinearOpMode {
         TUNING_MODE
     }
     public static PIDCoefficients PID = new PIDCoefficients(0, 0, 0);
-    public static double kV = 0, kA = 0, kG = 0;
-    public static int targetPos = 0;
+    public static double kV = 0.000495, kA = 0.0001, kG = 0;
+    public static int targetPos = 1700;
     private DcMotorEx leftSlide, rightSlide;
     private PIDController controller;
 
     @Override
     public void runOpMode() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         leftSlide = hardwareMap.get(DcMotorEx.class, "LSlide");
         rightSlide = hardwareMap.get(DcMotorEx.class, "RSlide");
+
+        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

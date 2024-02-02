@@ -14,14 +14,13 @@ public class Intake extends SubsystemBase {
     public static double GRABBER_TWO_IDLE_POS = 0;
     public static double GRABBER_ONE_GRAB_POS = 1;
     public static double GRABBER_TWO_GRAB_POS = 1;
-
     private final DcMotorEx m_intake;
-    private final Servo m_grabberOne;
-    private final Servo m_grabberTwo;
+    private final Servo m_intakeEx, m_grabberOne, m_grabberTwo;
     private double m_intakeSpeed = 1;
 
     public Intake(final HardwareMap hwMap) {
         m_intake = hwMap.get(DcMotorEx.class, "Intake");
+        m_intakeEx = hwMap.get(Servo.class, "IntakeEx");
         m_grabberOne = hwMap.get(Servo.class, "Grabber1");
         m_grabberTwo = hwMap.get(Servo.class, "Grabber2");
 
@@ -32,6 +31,10 @@ public class Intake extends SubsystemBase {
         m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
 
         this.stop();
+    }
+
+    public void setIntakeExUp() {
+        m_intakeEx.setPosition(0);
     }
 
     public void grab() {

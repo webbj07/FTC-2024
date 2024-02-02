@@ -41,6 +41,8 @@ public class AprilTagLocalization {
                 return new Vector2d(60, -35);
             case 6:
                 return new Vector2d(60, -41.5);
+            case 9:
+                return new Vector2d(-70.5, 35.5);
             default:
                 return null;
         }

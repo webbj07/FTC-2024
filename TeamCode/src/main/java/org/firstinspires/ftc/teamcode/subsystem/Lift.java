@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Lift extends SubsystemBase {
-    public static double MAX_VEL = 35;
-    public static double MAX_ACCEL = 35;
+    public static double MAX_VEL = 2190;
+    public static double MAX_ACCEL = 2000;
     public final static int LIFT_TOLERANCE = 10;
     private final DcMotorEx m_leftMotor, m_rightMotor;
 

@@ -32,7 +32,7 @@ public abstract class ScrappyTeleOpBase extends CommandOpMode {
         IMU.Parameters parameters = new IMU.Parameters(ScrappySettings.CONTROL_HUB_ORIENTATION);
         imu.initialize(parameters);
 
-        new InitPositions(robot.m_lift, robot.m_dropper, robot.m_intake).schedule();
+        new InitPositions(robot.m_lift, robot.m_outtake, robot.m_intake).schedule();
 
         initTeleOp();
     }

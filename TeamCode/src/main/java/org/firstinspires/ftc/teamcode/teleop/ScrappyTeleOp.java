@@ -71,7 +71,7 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
                                 .strafeToLinearHeading(new Vector2d(aprilTagPose.x, aprilTagPose.y), Math.PI)
                                 .build();
 
-                        schedule(new RunAction(gotoTag, null));
+                        schedule(new RunAction(gotoTag));
                     }
                 }));
 
@@ -106,10 +106,10 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
         // Dropper
         m_driverOne.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(new InstantCommand(() -> {
-                    robot.m_dropper.drop();
+                    robot.m_outtake.drop();
                 }))
                 .whenReleased(new InstantCommand(() -> {
-                    robot.m_dropper.back();
+                    robot.m_outtake.back();
                 }));
 
         // Conveyor + Intake

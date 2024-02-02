@@ -4,13 +4,15 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Dropper extends SubsystemBase {
+public class Outtake extends SubsystemBase {
     public final static double DROP_POS = 0.82;
     public final static double BACK_POS = 0.72;
-    private final Servo m_dropper;
+    private final Servo m_dropper, m_leftExtend, m_rightExtend;
 
-    public Dropper(final HardwareMap hwMap) {
+    public Outtake(final HardwareMap hwMap) {
         m_dropper = hwMap.get(Servo.class, "Dropper");
+        m_leftExtend = hwMap.get(Servo.class, "ExtendL");
+        m_rightExtend = hwMap.get(Servo.class, "ExtendR");
     }
 
     public void drop() {

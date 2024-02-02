@@ -2,27 +2,27 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystem.Dropper;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Lift;
+import org.firstinspires.ftc.teamcode.subsystem.Outtake;
 
 public class InitPositions extends CommandBase {
     private final Lift m_lift;
-    private final Dropper m_dropper;
+    private final Outtake m_outtake;
     private final Intake m_intake;
 
-    public InitPositions(Lift lift, Dropper dropper, Intake intake) {
+    public InitPositions(Lift lift, Outtake outtake, Intake intake) {
         m_lift = lift;
-        m_dropper = dropper;
+        m_outtake = outtake;
         m_intake = intake;
 
-        addRequirements(lift, dropper, intake);
+        addRequirements(lift, outtake, intake);
     }
 
     @Override
     public void execute() {
         m_lift.toInitial();
-        m_dropper.back();
+        m_outtake.back();
         m_intake.back();
     }
 
