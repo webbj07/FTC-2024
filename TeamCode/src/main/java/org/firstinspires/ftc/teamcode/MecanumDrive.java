@@ -45,6 +45,7 @@ import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumEncodersMessage;
 import org.firstinspires.ftc.teamcode.messages.PoseMessage;
+import org.firstinspires.ftc.teamcode.util.ProjectWrapperKt;
 
 import java.lang.Math;
 import java.util.Arrays;
@@ -110,7 +111,7 @@ public final class MecanumDrive {
     public final LazyImu imu;
 
     public final Localizer localizer;
-    public Pose2d pose;
+    public Pose2d pose, lastPose;
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
@@ -190,6 +191,7 @@ public final class MecanumDrive {
 
     public MecanumDrive(HardwareMap hardwareMap, Pose2d pose) {
         this.pose = pose;
+        this.lastPose = pose;
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
@@ -300,7 +302,7 @@ public final class MecanumDrive {
                     PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
             double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
             double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
-            double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
+                double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
             double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
             mecanumCommandWriter.write(new MecanumCommandMessage(
                     voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
@@ -333,6 +335,118 @@ public final class MecanumDrive {
             c.setStroke("#4CAF50FF");
             c.setStrokeWidth(1);
             c.strokePolyline(xPoints, yPoints);
+
+            lastPose = pose;
+
+            return true;
+        }
+
+        @Override
+        public void preview(Canvas c) {
+            c.setStroke("#4CAF507A");
+            c.setStrokeWidth(1);
+            c.strokePolyline(xPoints, yPoints);
+        }
+    }
+
+    public final class FollowPathAction implements Action {
+        public final TimeTrajectory timeTrajectory;
+        private double beginTs = -1;
+
+        private final double[] xPoints, yPoints;
+
+        public FollowPathAction(TimeTrajectory t) {
+            timeTrajectory = t;
+
+            List<Double> disps = com.acmerobotics.roadrunner.Math.range(
+                    0, t.path.length(),
+                    Math.max(2, (int) Math.ceil(t.path.length() / 2)));
+            xPoints = new double[disps.size()];
+            yPoints = new double[disps.size()];
+            for (int i = 0; i < disps.size(); i++) {
+                Pose2d p = t.path.get(disps.get(i), 1).value();
+                xPoints[i] = p.position.x;
+                yPoints[i] = p.position.y;
+            }
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket p) {
+            double t;
+            if (beginTs < 0) {
+                beginTs = Actions.now();
+                t = 0;
+            } else {
+                t = Actions.now() - beginTs;
+            }
+
+            if (t >= timeTrajectory.duration) {
+                leftFront.setPower(0);
+                leftBack.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
+
+                return false;
+            }
+
+            double disp = ProjectWrapperKt.calculateProjectionDistance(timeTrajectory.path, pose.component1(), ProjectWrapperKt.calculateDisplacement(lastPose, pose));
+            Pose2dDual<Arclength> targetPoseArclength = timeTrajectory.path.get(disp, 3);
+            Pose2dDual<Time> txWorldTarget = targetPoseArclength.reparam(timeTrajectory.profile.dispProfile.get(disp));
+
+            targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
+
+            PoseVelocity2d robotVelRobot = updatePoseEstimate();
+
+            Pose2d error = txWorldTarget.value().minusExp(pose);
+//            targetPoseArclength.velocity();
+
+            PoseVelocity2dDual<Time> command = new HolonomicController(
+                    PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
+                    PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain
+            ).compute(txWorldTarget, pose, robotVelRobot);
+            driveCommandWriter.write(new DriveCommandMessage(command));
+
+            MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
+            double voltage = voltageSensor.getVoltage();
+
+            final MotorFeedforward feedforward = new MotorFeedforward(PARAMS.kS,
+                    PARAMS.kV / PARAMS.inPerTick, 0);
+            double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
+            double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
+            double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
+            double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
+            mecanumCommandWriter.write(new MecanumCommandMessage(
+                    voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
+            ));
+
+            leftFront.setPower(leftFrontPower);
+            leftBack.setPower(leftBackPower);
+            rightBack.setPower(rightBackPower);
+            rightFront.setPower(rightFrontPower);
+
+            p.put("x", pose.position.x);
+            p.put("y", pose.position.y);
+            p.put("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+
+            p.put("xError", error.position.x);
+            p.put("yError", error.position.y);
+            p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));
+
+            // only draw when active; only one drive action should be active at a time
+            Canvas c = p.fieldOverlay();
+            drawPoseHistory(c);
+
+            c.setStroke("#4CAF50");
+            drawRobot(c, txWorldTarget.value());
+
+            c.setStroke("#3F51B5");
+            drawRobot(c, pose);
+
+            c.setStroke("#4CAF50FF");
+            c.setStrokeWidth(1);
+            c.strokePolyline(xPoints, yPoints);
+
+            lastPose = pose;
 
             return true;
         }

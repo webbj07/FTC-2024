@@ -27,7 +27,7 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
     protected final Pose2d m_startingPose;
     protected PropDetector.DetectionResult detectionResult = PropDetector.DetectionResult.LEFT;
     public ScrappyCore robot;
-    protected WebcamName webcam1, webcam2;
+    public WebcamName webcam1, webcam2;
 
     protected PropDetectionProcessor propDetectionProcessor;
     protected AprilTagProcessor aprilTagProcessor;
@@ -49,13 +49,7 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
             vision.setProcessorEnabled(aprilTagProcessor, true);
         }
 
-        if (isBackCamera) {
-            vision.setActiveCamera(webcam1);
-        } else {
-            vision.setActiveCamera(webcam2);
-        }
-
-        return this.aprilTagProcessor.getDetections();
+        return aprilTagProcessor.getDetections();
     }
 
     @Override
@@ -68,23 +62,24 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
         CameraName switchableCamera = ClassFactory.getInstance()
                 .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
-        propDetectionProcessor = new PropDetectionProcessor(m_allianceType, m_allianceSide);
+//        propDetectionProcessor = new PropDetectionProcessor(m_allianceType, m_allianceSide);
         aprilTagProcessor = new AprilTagProcessor.Builder().build();
         vision = new VisionPortal.Builder()
                 .setCamera(switchableCamera)
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .setAutoStopLiveView(true)
-                .addProcessors(propDetectionProcessor, aprilTagProcessor)
+                .addProcessors(aprilTagProcessor)
                 .build();
-        vision.setProcessorEnabled(aprilTagProcessor, false);
+
         while (vision.getCameraState() != VisionPortal.CameraState.STREAMING) {
             telemetry.addLine("Waiting for cameras to be ready...");
             telemetry.update();
             sleep(10);
         }
+
         vision.setActiveCamera(webcam1);
+        vision.setProcessorEnabled(aprilTagProcessor, false);
 
         initAuto();
 
@@ -97,8 +92,8 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
         }
 
         vision.setActiveCamera(webcam2);
-        vision.setProcessorEnabled(propDetectionProcessor, false);
         vision.setProcessorEnabled(aprilTagProcessor, true);
+//        vision.setProcessorEnabled(propDetectionProcessor, false);
 
         startAuto();
     }

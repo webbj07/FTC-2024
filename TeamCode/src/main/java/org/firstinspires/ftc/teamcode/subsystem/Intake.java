@@ -10,12 +10,14 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Intake extends SubsystemBase {
-    public static double GRABBER_ONE_IDLE_POS = 0;
-    public static double GRABBER_TWO_IDLE_POS = 0;
-    public static double GRABBER_ONE_GRAB_POS = 1;
-    public static double GRABBER_TWO_GRAB_POS = 1;
+    public static double EXTEND_UP_POS = 0.13;
+    public static double EXTEND_DOWN_POS = 0.49;
+    public static double GRABBER_ONE_IDLE_POS = 0.3;
+    public static double GRABBER_TWO_IDLE_POS = 0.48;
+    public static double GRABBER_ONE_GRAB_POS = 0.6;
+    public static double GRABBER_TWO_GRAB_POS = 0.13;
     private final DcMotorEx m_intake;
-    private final Servo m_intakeEx, m_grabberOne, m_grabberTwo;
+    public final Servo m_intakeEx, m_grabberOne, m_grabberTwo;
     private double m_intakeSpeed = 1;
 
     public Intake(final HardwareMap hwMap) {
@@ -33,8 +35,20 @@ public class Intake extends SubsystemBase {
         this.stop();
     }
 
-    public void setIntakeExUp() {
-        m_intakeEx.setPosition(0);
+    public void setGrabOnePos(double pos) {
+        m_grabberOne.setPosition(m_grabberOne.getPosition() + pos);
+    }
+
+    public void setGrabTwoPos(double pos) {
+        m_grabberTwo.setPosition(m_grabberTwo.getPosition() + pos);
+    }
+
+    public void exUp() {
+        m_intakeEx.setPosition(EXTEND_UP_POS);
+    }
+
+    public void exDown() {
+        m_intakeEx.setPosition(EXTEND_DOWN_POS);
     }
 
     public void grab() {
@@ -49,6 +63,14 @@ public class Intake extends SubsystemBase {
 
     public void back() {
         m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS);
+        m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
+    }
+
+    public void backOne() {
+        m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS);
+    }
+
+    public void backTwo() {
         m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
     }
 

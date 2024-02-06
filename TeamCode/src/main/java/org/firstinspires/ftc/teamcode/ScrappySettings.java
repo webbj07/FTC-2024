@@ -16,10 +16,10 @@ public class ScrappySettings {
     }
 
     public static boolean IS_COMPETITION = false;
-    public static double FRONT_CAMERA_OFFSET_X = -0.5;
-    public static double FRONT_CAMERA_OFFSET_Y = -5.5;
-    public static double BACK_CAMERA_OFFSET_X = 4.5;
-    public static double BACK_CAMERA_OFFSET_Y = 8.5;
+    public static double FRONT_CAMERA_OFFSET_X = 0.5;
+    public static double FRONT_CAMERA_OFFSET_Y = 6.5;
+    public static double BACK_CAMERA_OFFSET_X = -4;
+    public static double BACK_CAMERA_OFFSET_Y = 6.25;
     public static PIDCoefficients SLIDE_PID = new PIDCoefficients(0, 0 , 0);
     public static double SLIDE_KV = 0;
     public static double SLIDE_KA = 0;

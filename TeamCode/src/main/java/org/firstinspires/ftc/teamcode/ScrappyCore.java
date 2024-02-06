@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Lift;
 import org.firstinspires.ftc.teamcode.subsystem.Outtake;
 import org.firstinspires.ftc.teamcode.subsystem.Plane;
-import org.firstinspires.ftc.teamcode.subsystem.SensorLocalization;
 
 public class ScrappyCore extends Robot {
     public final ScrappySettings.AllianceType ALLIANCE_TYPE;

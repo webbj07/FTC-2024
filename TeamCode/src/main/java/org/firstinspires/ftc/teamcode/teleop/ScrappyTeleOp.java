@@ -8,6 +8,9 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -44,7 +47,7 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
         m_driverTwo = new GamepadEx(gamepad2);
 
         // Initialize slide top position tracker
-        m_slideTopPos = robot.m_lift.getPosition() + 1400;
+        m_slideTopPos = robot.m_lift.getPosition() + 600;
 
         /* Driver One */
         // Drive Method
@@ -77,15 +80,23 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
 
         // Speed
         m_driverOne.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(new InstantCommand(() -> m_speed = 0.3));
+                .whenPressed(new InstantCommand(() -> m_speed = 0.16));
         m_driverOne.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> m_speed = 1));
 
         // Lift
         m_driverOne.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new InstantCommand(robot.m_lift::toInitial));
+                .whenPressed(new SequentialCommandGroup(
+                    new InstantCommand(robot.m_lift::toInitial),
+                    new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(robot.m_lift.getTargetPosition())),
+                    new InstantCommand(() -> robot.m_outtake.setExtPos(0.18))
+                ));
+
         m_driverOne.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new InstantCommand(() -> robot.m_lift.setPosition(m_slideTopPos)));
+                .whenPressed(new InstantCommand(() -> {
+                    robot.m_lift.setPosition(m_slideTopPos);
+                    robot.m_outtake.setExtPos(0.53);
+                } ));
         m_driverOne.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(() -> robot.m_lift.setRelativePosition(-160)));
         m_driverOne.getGamepadButton(GamepadKeys.Button.DPAD_UP)
@@ -93,15 +104,22 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
                     if (robot.m_lift.getTargetPosition() > m_slideTopPos) {
                         m_slideTopPos = robot.m_lift.getTargetPosition();
                     }
+
+                    if (robot.m_lift.getTargetPosition() >= 250) {
+                        robot.m_outtake.setExtPos(0.53);
+                    } else {
+                        robot.m_outtake.setExtPos(0.18);
+                    }
+
                     robot.m_lift.setRelativePosition(160);
                 }));
 
         // Intake Grabber
         m_driverOne.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON)
-                .whenPressed(new InstantCommand(robot.m_intake::back));
+                .whenPressed(new InstantCommand(robot.m_intake::exDown));
 
         m_driverOne.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)
-                .whenPressed(new InstantCommand(robot.m_intake::grab));
+                .whenPressed(new InstantCommand(robot.m_intake::exUp));
 
         // Dropper
         m_driverOne.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
@@ -143,13 +161,18 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
         /* Driver Two */
         // Plane
         m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new InstantCommand(() -> robot.m_plane.setRelativePosition(-0.05)));
+                .whenPressed(new InstantCommand(() -> robot.m_intake.setGrabOnePos(-0.05)));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new InstantCommand(() -> robot.m_plane.setRelativePosition(0.05)));
+                .whenPressed(new InstantCommand(() -> robot.m_intake.setGrabOnePos(0.05)));
+        m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new InstantCommand(() -> robot.m_intake.setGrabTwoPos(-0.05)));
+        m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new InstantCommand(() -> robot.m_intake.setGrabTwoPos(0.05)));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(new InstantCommand(robot.m_plane::back));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(robot.m_plane::launch));
+
 
     }
     @Override
@@ -163,6 +186,8 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
             this.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
         }
 
+        telemetry.addData("one", robot.m_intake.m_grabberOne.getPosition());
+        telemetry.addData("two", robot.m_intake.m_grabberTwo.getPosition());
         telemetry.update();
     }
 

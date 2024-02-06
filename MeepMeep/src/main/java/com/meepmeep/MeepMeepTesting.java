@@ -13,8 +13,8 @@ public class MeepMeepTesting {
     enum Detection {
         LEFT, MIDDLE, RIGHT
     }
-    public static final double chassisWidth = 14;
-    public static final double chassisHeight = 14;
+    public static final double chassisWidth = 14.5;
+    public static final double chassisHeight = 17;
     public static final double maxVel = 50;
     public static final double maxAccel = 50;
     public static final double maxAngVel = Math.PI;
@@ -82,13 +82,32 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(new Vector2d(60 - 9, 28), Math.toRadians(180))
                 .build();
 
-        Action blueFar = robot.getDrive().actionBuilder(new Pose2d(-58.5, 36, Math.toRadians(180.00)))
-                .strafeToLinearHeading(new Vector2d(-48, 45), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(12.5, 59.2), 0)
-                .splineToConstantHeading(new Vector2d(40, 33), 0)
+        Action blueFar = robot.getDrive().actionBuilder(new Pose2d(-58.5, 35.5, Math.toRadians(180.00)))
+                .strafeToLinearHeading(new Vector2d(-55, 40.5), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(12.5, 59.5), 0)
+                .splineToConstantHeading(new Vector2d(36, 33.5), 0)
+                .waitSeconds(0.001)
+                .strafeToConstantHeading(new Vector2d(46, 35.5))
+                .waitSeconds(0.001)
+                .strafeToLinearHeading(new Vector2d(43, 38), Math.toRadians(180.00))
+                .splineToConstantHeading(new Vector2d(-36, 58), Math.toRadians(190))
+                .splineToConstantHeading(new Vector2d(-52, 35.5), Math.toRadians(180))
                 .build();
 
-        robot.runAction(blueFar);
+        Action blueFar2 = robot.getDrive().actionBuilder(new Pose2d(-58.5, 35.5, Math.toRadians(180.00)))
+                .lineToXConstantHeading(-48)
+                .splineToConstantHeading(new Vector2d(-35, 58), 0)
+                .splineToConstantHeading(new Vector2d(23, 58), 0)
+                .splineToConstantHeading(new Vector2d(36, 33.5), 0)
+                .strafeToConstantHeading(new Vector2d(47, 35.5))
+                .waitSeconds(0.001)
+                .lineToXConstantHeading(35.5)
+                .splineToConstantHeading(new Vector2d(22.5, 58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-35, 58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-52, 35.5), Math.toRadians(180))
+                .build();
+
+        robot.runAction(blueFar2);
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)

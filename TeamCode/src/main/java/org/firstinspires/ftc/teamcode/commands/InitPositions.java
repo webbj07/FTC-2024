@@ -24,6 +24,7 @@ public class InitPositions extends CommandBase {
         m_lift.toInitial();
         m_outtake.back();
         m_intake.back();
+        m_intake.exUp();
     }
 
     @Override

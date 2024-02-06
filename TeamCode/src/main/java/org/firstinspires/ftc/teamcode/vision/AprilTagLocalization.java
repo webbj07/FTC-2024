@@ -5,9 +5,32 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.interfaces.PropDetector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class AprilTagLocalization {
+    public static int getBackboardIdFromDetection(ScrappySettings.AllianceType alliance, PropDetector.DetectionResult detectionResult) {
+        if (alliance == ScrappySettings.AllianceType.BLUE) {
+            switch (detectionResult) {
+                case LEFT:
+                    return 1;
+                case MIDDLE:
+                    return 2;
+                default:
+                    return 3;
+            }
+        } else {
+            switch (detectionResult) {
+                case LEFT:
+                    return 4;
+                case MIDDLE:
+                    return 5;
+                default:
+                    return 6;
+            }
+        }
+    }
+
     public static Vector2d getTagPosition(AprilTagDetection detection) {
         switch (detection.id) {
             case 1:
@@ -32,13 +55,13 @@ public class AprilTagLocalization {
             case 1:
                 return new Vector2d(60, 41.5);
             case 2:
-                return new Vector2d(60, 35);
+                return new Vector2d(60, 35.5);
             case 3:
                 return new Vector2d(60, 29.5);
             case 4:
                 return new Vector2d(60, -29.5);
             case 5:
-                return new Vector2d(60, -35);
+                return new Vector2d(60, -35.5);
             case 6:
                 return new Vector2d(60, -41.5);
             case 9:
