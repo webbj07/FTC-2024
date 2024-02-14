@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 
@@ -15,22 +16,25 @@ import org.firstinspires.ftc.teamcode.commands.InitPositions;
 import org.firstinspires.ftc.teamcode.interfaces.PropDetector;
 import org.firstinspires.ftc.teamcode.vision.AprilTagLocalization;
 import org.firstinspires.ftc.teamcode.vision.PropDetectionProcessor;
+import org.firstinspires.ftc.teamcode.vision.StackProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 
+@Config
 public abstract class ScrappyAutoBase extends CommandOpMode {
     protected final ScrappySettings.AllianceType m_allianceType;
     protected final ScrappySettings.AllianceSide m_allianceSide;
     protected final Pose2d m_startingPose;
-    protected PropDetector.DetectionResult detectionResult = PropDetector.DetectionResult.LEFT;
+    public static PropDetector.DetectionResult detectionResult = PropDetector.DetectionResult.LEFT;
     public ScrappyCore robot;
     public WebcamName webcam1, webcam2;
 
     protected PropDetectionProcessor propDetectionProcessor;
     protected AprilTagProcessor aprilTagProcessor;
+    public StackProcessor stackProcessor;
     public VisionPortal vision;
 
     public ScrappyAutoBase(ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide, Pose2d startPose) {
@@ -64,12 +68,13 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
 
 //        propDetectionProcessor = new PropDetectionProcessor(m_allianceType, m_allianceSide);
         aprilTagProcessor = new AprilTagProcessor.Builder().build();
+        stackProcessor = new StackProcessor();
         vision = new VisionPortal.Builder()
                 .setCamera(switchableCamera)
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .addProcessors(aprilTagProcessor)
+                .addProcessors(aprilTagProcessor, stackProcessor)
                 .build();
 
         while (vision.getCameraState() != VisionPortal.CameraState.STREAMING) {
@@ -78,20 +83,22 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
             sleep(10);
         }
 
-        vision.setActiveCamera(webcam1);
+        vision.setActiveCamera(webcam2);
         vision.setProcessorEnabled(aprilTagProcessor, false);
+        vision.setProcessorEnabled(stackProcessor, false);
 
+        telemetry.addLine("Initializing trajectories...");
+        telemetry.update();
         initAuto();
 
         while (opModeInInit()) {
-            detectionResult = PropDetector.DetectionResult.MIDDLE;
+//            detectionResult = PropDetector.DetectionResult.MIDDLE;
 //            detectionResult = propDetectionProcessor.getDetectionResult();
             telemetry.addData("Detected", detectionResult);
             telemetry.update();
             sleep(25);
         }
 
-        vision.setActiveCamera(webcam2);
         vision.setProcessorEnabled(aprilTagProcessor, true);
 //        vision.setProcessorEnabled(propDetectionProcessor, false);
 

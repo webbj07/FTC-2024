@@ -51,8 +51,8 @@ public class PropDetectionProcessor implements VisionProcessor, PropDetector {
         this.ALLIANCE_SIDE = allianceSide;
 
         if (ALLIANCE_SIDE == ScrappySettings.AllianceSide.CLOSE) {
-            LEFT_RECTANGLE = new Rect(new Point(190, 155), new Point(290, 280));
-            RIGHT_RECTANGLE = new Rect(new Point(520, 155), new Point(640, 310));
+            LEFT_RECTANGLE = new Rect(new Point(1, 1), new Point(1, 1));
+            RIGHT_RECTANGLE = new Rect(new Point(320, 60), new Point(400, 165));
         } else {
             LEFT_RECTANGLE = new Rect(new Point(65, 135), new Point(175, 245));
             RIGHT_RECTANGLE = new Rect(new Point(400, 170), new Point(505, 310));

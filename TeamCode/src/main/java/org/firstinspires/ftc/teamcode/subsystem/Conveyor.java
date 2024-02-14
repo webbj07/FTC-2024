@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystem;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -14,7 +13,6 @@ public class Conveyor extends SubsystemBase {
     public Conveyor(final HardwareMap hwMap) {
         m_conveyor = hwMap.get(DcMotorEx.class, "Conveyor");
         m_conveyor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m_conveyor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void up() {

@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Lift;
 import org.firstinspires.ftc.teamcode.subsystem.Outtake;
 import org.firstinspires.ftc.teamcode.subsystem.Plane;
+import org.firstinspires.ftc.teamcode.subsystem.SensorLocalization;
 
 public class ScrappyCore extends Robot {
     public final ScrappySettings.AllianceType ALLIANCE_TYPE;
@@ -21,7 +22,7 @@ public class ScrappyCore extends Robot {
     public Conveyor m_conveyor;
     public Outtake m_outtake;
     public Plane m_plane;
-//    public SensorLocalization m_sensors;
+    public SensorLocalization m_sensor;
 
     public ScrappyCore(HardwareMap hardwareMap, ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide, Pose2d startPose) {
         ALLIANCE_TYPE = allianceType;
@@ -37,6 +38,6 @@ public class ScrappyCore extends Robot {
         m_conveyor = new Conveyor(hardwareMap);
         m_outtake = new Outtake(hardwareMap);
         m_plane = new Plane(hardwareMap);
-//        m_sensors = new SensorLocalization(hardwareMap);
+        m_sensor = new SensorLocalization(hardwareMap);
     }
 }

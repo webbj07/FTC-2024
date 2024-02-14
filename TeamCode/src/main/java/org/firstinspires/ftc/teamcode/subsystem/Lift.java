@@ -5,11 +5,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 public class Lift extends SubsystemBase {
     public static double MAX_VEL = 2190;
     public static double MAX_ACCEL = 2000;
-    public final static int LIFT_TOLERANCE = 10;
+    public static PIDCoefficients PID = new PIDCoefficients(0, 0 , 0);
+    public static double kV = 0.00051;
+    public static double kA = 0.0001;
+    public static double kG = 0;
+    public static int LIFT_TOLERANCE = 35;
     private final DcMotorEx m_leftMotor, m_rightMotor;
 
     public Lift(final HardwareMap hwMap) {
@@ -54,7 +59,7 @@ public class Lift extends SubsystemBase {
     }
 
     public int getPosition() {
-        return m_leftMotor.getCurrentPosition();
+        return (m_leftMotor.getCurrentPosition() + m_rightMotor.getCurrentPosition()) / 2;
     }
 
     public double getVelocity() {

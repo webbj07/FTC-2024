@@ -23,8 +23,8 @@ public class InitPositions extends CommandBase {
     public void execute() {
         m_lift.toInitial();
         m_outtake.back();
-        m_intake.back();
-        m_intake.exUp();
+//        m_intake.back();
+        m_intake.raise();
     }
 
     @Override

@@ -13,22 +13,33 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-public class DriveToAprilTag extends CommandBase {
+public class DriveToAprilTagOld extends CommandBase {
     private final ScrappyAutoBase m_base;
     private final int m_desiredId;
     private final boolean m_isBackCamera;
     private final double m_disAway;
     private Command m_runOnDetected = null;
+    private Double m_finalHeading = null;
+    private Vector2d m_offset = new Vector2d(0, 0);
     private Action m_action = null;
     private boolean m_finished = false;
-    public DriveToAprilTag(ScrappyAutoBase base, int id, boolean isBackCamera, double disAway) {
+    public DriveToAprilTagOld(ScrappyAutoBase base, int id, boolean isBackCamera, double disAway) {
         m_base = base;
         m_desiredId = id;
         m_isBackCamera = isBackCamera;
         m_disAway = disAway;
     }
 
-    public DriveToAprilTag(ScrappyAutoBase base, int id, boolean isBackCamera, double disAway, Command runOnDetected) {
+    public DriveToAprilTagOld(ScrappyAutoBase base, int id, boolean isBackCamera, Double disAway, Double finalHeading, Vector2d offset) {
+        m_base = base;
+        m_desiredId = id;
+        m_isBackCamera = isBackCamera;
+        m_disAway = disAway;
+        m_finalHeading = finalHeading;
+        m_offset = offset;
+    }
+
+    public DriveToAprilTagOld(ScrappyAutoBase base, int id, boolean isBackCamera, double disAway, Command runOnDetected) {
         m_base = base;
         m_desiredId = id;
         m_isBackCamera = isBackCamera;
@@ -42,7 +53,7 @@ public class DriveToAprilTag extends CommandBase {
         double avgX = 0;
         double avgY = 0;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
             List<AprilTagDetection> detectionList = m_base.getAprilTagDetections(m_isBackCamera);
             for (AprilTagDetection detection : detectionList) {
                 if (detection.id == m_desiredId) {
@@ -68,7 +79,7 @@ public class DriveToAprilTag extends CommandBase {
 
         m_base.robot.m_drive.pose = new Pose2d(avgX, avgY, robotHeading);
         m_action = m_base.robot.m_drive.actionBuilder(m_base.robot.m_drive.pose)
-                .strafeToLinearHeading(AprilTagLocalization.getTagPosition(m_desiredId).plus(new Vector2d(m_desiredId <= 6 ? -m_disAway : m_disAway, 0)), Math.toRadians(180))
+                .strafeToLinearHeading(AprilTagLocalization.getTagPosition(m_desiredId).plus(new Vector2d(m_desiredId <= 6 ? -m_disAway : m_disAway, 0)).plus(m_offset), m_finalHeading != null ? m_finalHeading : Math.toRadians(180))
                 .build();
     }
 

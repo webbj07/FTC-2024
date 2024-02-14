@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ScrappySettings;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.TwoDeadWheelLocalizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +61,10 @@ public final class TuningOpModes {
                 leftEncs.add(dl.leftBack);
                 rightEncs.add(dl.rightFront);
                 rightEncs.add(dl.rightBack);
+            } else if (md.localizer instanceof TwoDeadWheelLocalizer) {
+                TwoDeadWheelLocalizer dl = (TwoDeadWheelLocalizer) md.localizer;
+                parEncs.add(dl.par);
+                perpEncs.add(dl.perp);
             } else if (md.localizer instanceof ThreeDeadWheelLocalizer) {
                 ThreeDeadWheelLocalizer dl = (ThreeDeadWheelLocalizer) md.localizer;
                 parEncs.add(dl.par0);

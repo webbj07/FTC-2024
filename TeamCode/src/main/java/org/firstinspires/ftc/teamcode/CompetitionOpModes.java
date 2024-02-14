@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.autonomous.blue.BlueFar2PlusOne;
+import org.firstinspires.ftc.teamcode.autonomous.blue.BlueFar2Plus3;
 import org.firstinspires.ftc.teamcode.teleop.ScrappyTeleOp;
 
 public final class CompetitionOpModes {
@@ -30,6 +30,6 @@ public final class CompetitionOpModes {
     @OpModeRegistrar
     public static void register(OpModeManager manager) {
         manager.register(metaForClass(ScrappyTeleOp.class, OpModeMeta.Flavor.TELEOP), ScrappyTeleOp.class);
-        manager.register(metaForClass(BlueFar2PlusOne.class, OpModeMeta.Flavor.AUTONOMOUS), BlueFar2PlusOne.class);
+        manager.register(metaForClass(BlueFar2Plus3.class, OpModeMeta.Flavor.AUTONOMOUS), BlueFar2Plus3.class);
     }
 }

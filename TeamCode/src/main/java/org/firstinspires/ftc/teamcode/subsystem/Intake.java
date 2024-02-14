@@ -11,13 +11,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Intake extends SubsystemBase {
     public static double EXTEND_UP_POS = 0.13;
-    public static double EXTEND_DOWN_POS = 0.49;
+    public static double EXTEND_DOWN_POS = 0.44;
     public static double GRABBER_ONE_IDLE_POS = 0.3;
     public static double GRABBER_TWO_IDLE_POS = 0.48;
     public static double GRABBER_ONE_GRAB_POS = 0.6;
     public static double GRABBER_TWO_GRAB_POS = 0.13;
     private final DcMotorEx m_intake;
-    public final Servo m_intakeEx, m_grabberOne, m_grabberTwo;
+    private final Servo m_intakeEx, m_grabberOne, m_grabberTwo;
     private double m_intakeSpeed = 1;
 
     public Intake(final HardwareMap hwMap) {
@@ -29,25 +29,17 @@ public class Intake extends SubsystemBase {
         m_intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         m_intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS);
-        m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
+        this.raise();
+        this.grab();
 
         this.stop();
     }
 
-    public void setGrabOnePos(double pos) {
-        m_grabberOne.setPosition(m_grabberOne.getPosition() + pos);
-    }
-
-    public void setGrabTwoPos(double pos) {
-        m_grabberTwo.setPosition(m_grabberTwo.getPosition() + pos);
-    }
-
-    public void exUp() {
+    public void raise() {
         m_intakeEx.setPosition(EXTEND_UP_POS);
     }
 
-    public void exDown() {
+    public void lower() {
         m_intakeEx.setPosition(EXTEND_DOWN_POS);
     }
 
@@ -66,17 +58,17 @@ public class Intake extends SubsystemBase {
         m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
     }
 
+    public void back(double rel) {
+        m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS + rel);
+        m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS + rel);
+    }
+
     public void backOne() {
         m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS);
     }
 
     public void backTwo() {
         m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
-    }
-
-    public void back(double rel) {
-        m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS + rel);
-        m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS + rel);
     }
 
     public void suck() {
@@ -91,27 +83,27 @@ public class Intake extends SubsystemBase {
         m_intake.setPower(0);
     }
 
-    public void setSpeed(double speed) {
+    public void setIntakeSpeed(double speed) {
         m_intakeSpeed = Range.clip(speed, 0, 1);
     }
 
-    public double getSpeed() {
+    public double getIntakeSpeed() {
         return m_intakeSpeed;
     }
 
-    public double getPower() {
+    public double getIntakePower() {
         return m_intake.getPower();
     }
 
-    public double getCurrent() {
+    public double getIntakeCurrent() {
         return m_intake.getCurrent(CurrentUnit.AMPS);
     }
 
     public boolean isSucking() {
-        return m_intake.getPower() == m_intakeSpeed;
+        return m_intake.getPower() > 0;
     }
 
     public boolean isSpitting() {
-        return m_intake.getPower() == -m_intakeSpeed;
+        return m_intake.getPower() < 0;
     }
 }

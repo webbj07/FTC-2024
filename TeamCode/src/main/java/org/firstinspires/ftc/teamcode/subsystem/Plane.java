@@ -29,15 +29,15 @@ public class Plane extends SubsystemBase {
         m_plane.setPosition(BACK_POS + pos);
     }
 
-    public void setPosition(double pos) {
+    public void setPos(double pos) {
         m_plane.setPosition(pos);
     }
 
-    public void setRelativePosition(double pos) {
+    public void setRelPos(double pos) {
         m_plane.setPosition(m_plane.getPosition() + pos);
     }
 
-    public double getPosition() {
+    public double getPos() {
         return m_plane.getPosition();
     }
 }

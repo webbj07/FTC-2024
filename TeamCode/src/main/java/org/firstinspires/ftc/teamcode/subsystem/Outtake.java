@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Outtake extends SubsystemBase {
-    public final static double DROP_POS = 0.86;
-    public final static double BACK_POS = 0.72;
+    public final static double DROP_POS = 0.82;
+    public final static double BACK_POS = 0.68;
     public final static double EXTEND_LOW = 0.16;
     public final static double EXTEND_HIGH = 0.6;
     private final Servo m_dropper, m_leftExtend, m_rightExtend;
@@ -15,18 +15,34 @@ public class Outtake extends SubsystemBase {
         m_dropper = hwMap.get(Servo.class, "Dropper");
         m_leftExtend = hwMap.get(Servo.class, "ExtendL");
         m_rightExtend = hwMap.get(Servo.class, "ExtendR");
+
         m_rightExtend.setDirection(Servo.Direction.REVERSE);
 
         m_leftExtend.setPosition(EXTEND_LOW);
         m_rightExtend.setPosition(EXTEND_LOW);
     }
 
-    public void exLow() {
-        m_leftExtend.setPosition(EXTEND_LOW + 0.05);
-        m_rightExtend.setPosition(EXTEND_LOW + 0.05);
+    public void extend() {
+        m_leftExtend.setPosition(EXTEND_HIGH);
+        m_rightExtend.setPosition(EXTEND_HIGH);
     }
 
-    public void setExtPos(double pos) {
+    public void extend(double pos) {
+        m_leftExtend.setPosition(EXTEND_HIGH + pos);
+        m_rightExtend.setPosition(EXTEND_HIGH + pos);
+    }
+
+    public void lower() {
+        m_leftExtend.setPosition(EXTEND_LOW);
+        m_rightExtend.setPosition(EXTEND_LOW);
+    }
+
+    public void lower(double pos) {
+        m_leftExtend.setPosition(EXTEND_LOW + pos);
+        m_rightExtend.setPosition(EXTEND_LOW);
+    }
+
+    public void setExtendPos(double pos) {
         m_leftExtend.setPosition(pos);
         m_rightExtend.setPosition(pos);
     }
@@ -47,15 +63,15 @@ public class Outtake extends SubsystemBase {
         m_dropper.setPosition(BACK_POS + pos);
     }
 
-    public void setPosition(double pos) {
+    public void setDropperPos(double pos) {
         m_dropper.setPosition(pos);
     }
 
-    public void setRelativePosition(double pos) {
+    public void setRelDropperPos(double pos) {
         m_dropper.setPosition(m_dropper.getPosition() + pos);
     }
 
-    public double getPosition() {
+    public double getDropperPos() {
         return m_dropper.getPosition();
     }
 }

@@ -63,5 +63,9 @@ public abstract class ScrappyTeleOpBase extends CommandOpMode {
         robot.m_drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-leftStickY, -leftStickX), -rightStickX));
     }
 
+    protected void driveRobotCentric(double leftStickX, double leftStickY, double rightStickX, double speed) {
+        robot.m_drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-leftStickY, -leftStickX).times(speed), -rightStickX * speed));
+    }
+
     public abstract void initTeleOp();
 }

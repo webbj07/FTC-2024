@@ -34,17 +34,25 @@ public class AprilTagLocalization {
     public static Vector2d getTagPosition(AprilTagDetection detection) {
         switch (detection.id) {
             case 1:
-                return new Vector2d(60, 41.5);
+                return new Vector2d(60.25, 41.41);
             case 2:
-                return new Vector2d(60, 35);
+                return new Vector2d(60.25, 35.41);
             case 3:
-                return new Vector2d(60, 29.5);
+                return new Vector2d(60.25, 29.41);
             case 4:
-                return new Vector2d(60, -29.5);
+                return new Vector2d(60.25, -29.41);
             case 5:
-                return new Vector2d(60, -35);
+                return new Vector2d(60.25, -35.41);
             case 6:
-                return new Vector2d(60, -41.5);
+                return new Vector2d(60.25, -41.41);
+            case 7:
+                return new Vector2d(-70.25, -40.625);
+            case 8:
+                return new Vector2d(-70.25, -35.125);
+            case 9:
+                return new Vector2d(-70.25, 35.125);
+            case 10:
+                return new Vector2d(-70.25, 40.625);
             default:
                 return null;
         }
@@ -64,8 +72,14 @@ public class AprilTagLocalization {
                 return new Vector2d(60, -35.5);
             case 6:
                 return new Vector2d(60, -41.5);
+            case 7:
+                return new Vector2d(-70.25, -40.625);
+            case 8:
+                return new Vector2d(-70.25, -35.5);
             case 9:
-                return new Vector2d(-70.5, 35.5);
+                return new Vector2d(-70.25, 35.5);
+            case 10:
+                return new Vector2d(-70.25, 40.625);
             default:
                 return null;
         }
@@ -77,6 +91,30 @@ public class AprilTagLocalization {
 
         double x = detection.ftcPose.x + offset_x;
         double y = detection.ftcPose.y + offset_y;
+
+        double rotatedHeading = -robotHeading;
+
+        double x2 = x * Math.cos(rotatedHeading) + y * Math.sin(rotatedHeading);
+        double y2 = x * -Math.sin(rotatedHeading) + y * Math.cos(rotatedHeading);
+
+        double absX;
+        double absY;
+
+        VectorF tagpose = detection.metadata.fieldPosition;
+        if (detection.metadata.id <= 6) {
+            absX = tagpose.get(0) + y2;
+            absY = tagpose.get(1) - x2;
+        } else {
+            absX = tagpose.get(0) - y2;
+            absY = tagpose.get(1) + x2;
+        }
+
+        return new Pose2d(absX, absY, robotHeading);
+    }
+
+    public static Pose2d getRobotPositionFromTag(AprilTagDetection detection, double robotHeading, double offsetX, double offsetY) {
+        double x = detection.ftcPose.x + offsetX;
+        double y = detection.ftcPose.y + offsetY;
 
         double rotatedHeading = -robotHeading;
 
