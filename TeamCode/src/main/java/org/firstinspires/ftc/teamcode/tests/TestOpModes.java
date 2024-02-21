@@ -31,5 +31,9 @@ public final class TestOpModes {
         manager.register(metaForClass(SplineTestEx.class), SplineTestEx.class);
         manager.register(metaForClass(RobotAutoDriveToAprilTag.class), RobotAutoDriveToAprilTag.class);
         manager.register(metaForClass(ServoTest.class), ServoTest.class);
+        manager.register(metaForClass(PropDetectionTest.class), PropDetectionTest.class);
+        manager.register(metaForClass(REV2mRealignmentTest.class), REV2mRealignmentTest.class);
+        manager.register(metaForClass(SensorIMUNonOrthogonal.class), SensorIMUNonOrthogonal.class);
+        manager.register(metaForClass(VisionTest.class), VisionTest.class);
     }
 }

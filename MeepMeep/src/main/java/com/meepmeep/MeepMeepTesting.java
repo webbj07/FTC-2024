@@ -217,27 +217,41 @@ public class MeepMeepTesting {
 //                .strafeToLinearHeading(new Vector2d(-36.5, 13), Math.toRadians(90) - 1e-6)
 //                .strafeToConstantHeading(new Vector2d(-40, 11.5))
 //                .turnTo(Math.PI)
-                .strafeTo(new Vector2d(-55, 16))
-                .splineToLinearHeading(new Pose2d(-36.5, 13, Math.toRadians(90) - 1e-6), 0)
+//
+//                .strafeToLinearHeading(new Vector2d(-55, 11.5), Math.toRadians(180))
+
+//                .strafeTo(new Vector2d(-53, 16))
+//                .splineToLinearHeading(new Pose2d(-36.5, 13, Math.toRadians(90) - 1e-6), 0)
+
+                .strafeTo(new Vector2d(-34, 58))
+                .strafeTo(new Vector2d(-34, 12))
+                .strafeToLinearHeading(new Vector2d(-38, 16), Math.toRadians(130))
                 .build();
 
-        Action left2 = robot.getDrive().actionBuilder(new Pose2d(15.5, 61.75, Math.toRadians(270)))
-                .splineToLinearHeading(new Pose2d(30, 37, Math.toRadians(230)), Math.toRadians(270))
-                .waitSeconds(0.4)
-                .waitSeconds(0.1)
-                .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(52.5, 40.25), Math.toRadians(180))
-                .waitSeconds(0.1)
+        Action left2 = robot.getDrive().actionBuilder(new Pose2d(52.5, 41, Math.PI))
+                .splineToLinearHeading(new Pose2d(48, 12.5, Math.toRadians(90)), 0)
                 .endTrajectory()
-                .strafeToLinearHeading(new Vector2d(52.75, 33.5), Math.toRadians(180))
-                .endTrajectory()
-                .afterDisp(5, () -> {
-                })
-                .splineToConstantHeading(new Vector2d(50, 60), 0)
-                .splineToConstantHeading(new Vector2d(59.5, 60), 0)
+                .turn(4 * Math.PI)
+                .turnTo(Math.PI)
                 .build();
 
-        robot.runAction(underTruss);
+        Action funnyAuto = robot.getDrive().actionBuilder(new Pose2d(17, 62, Math.toRadians(270)))
+                .strafeTo(new Vector2d(11.5, 31.5))
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(51.5, 35.5, Math.PI), 0)
+                .setReversed(false)
+                .splineToConstantHeading(new Vector2d(35.5, 11.5), Math.PI)
+                .splineToConstantHeading(new Vector2d(-60, 11.5), Math.PI)
+                .waitSeconds(0.0001)
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(35.5, 11.5), 0)
+                .splineToConstantHeading(new Vector2d(51.5, 35.5), 0)
+                .waitSeconds(0.0001)
+                .splineToConstantHeading(new Vector2d(47, 11.5), 0)
+                .splineToConstantHeading(new Vector2d(58, 11.5), 0)
+                .build();
+
+        robot.runAction(funnyAuto);
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)

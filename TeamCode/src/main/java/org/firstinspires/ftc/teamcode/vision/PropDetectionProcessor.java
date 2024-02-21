@@ -50,12 +50,12 @@ public class PropDetectionProcessor implements VisionProcessor, PropDetector {
         this.ALLIANCE_TYPE = allianceType;
         this.ALLIANCE_SIDE = allianceSide;
 
-        if (ALLIANCE_SIDE == ScrappySettings.AllianceSide.CLOSE) {
-            LEFT_RECTANGLE = new Rect(new Point(1, 1), new Point(1, 1));
-            RIGHT_RECTANGLE = new Rect(new Point(320, 60), new Point(400, 165));
+        if ((ALLIANCE_SIDE == ScrappySettings.AllianceSide.CLOSE && ALLIANCE_TYPE == ScrappySettings.AllianceType.BLUE) || (ALLIANCE_SIDE == ScrappySettings.AllianceSide.FAR && ALLIANCE_TYPE == ScrappySettings.AllianceType.RED)) {
+            LEFT_RECTANGLE = new Rect(new Point(20, 80), new Point(150, 210));
+            RIGHT_RECTANGLE = new Rect(new Point(385, 55), new Point(470, 160));
         } else {
-            LEFT_RECTANGLE = new Rect(new Point(65, 135), new Point(175, 245));
-            RIGHT_RECTANGLE = new Rect(new Point(400, 170), new Point(505, 310));
+            LEFT_RECTANGLE = new Rect(new Point(200, 65), new Point(300, 200));
+            RIGHT_RECTANGLE = new Rect(new Point(505, 70), new Point(630, 210));
         }
     }
 
@@ -90,12 +90,22 @@ public class PropDetectionProcessor implements VisionProcessor, PropDetector {
 
         double allianceBasedThreshold = ALLIANCE_TYPE == ScrappySettings.AllianceType.RED ? RED_THRESHOLD : BLUE_THRESHOLD;
 
-        if (averagedLeftBox > allianceBasedThreshold) {
-            detectionResult = DetectionResult.MIDDLE;
-        } else if (averagedRightBox > allianceBasedThreshold){
-            detectionResult = DetectionResult.RIGHT;
+        if ((ALLIANCE_SIDE == ScrappySettings.AllianceSide.CLOSE && ALLIANCE_TYPE == ScrappySettings.AllianceType.BLUE) || (ALLIANCE_SIDE == ScrappySettings.AllianceSide.FAR && ALLIANCE_TYPE == ScrappySettings.AllianceType.RED)) {
+            if (averagedLeftBox > allianceBasedThreshold) {
+                detectionResult = DetectionResult.LEFT;
+            } else if (averagedRightBox > allianceBasedThreshold){
+                detectionResult = DetectionResult.MIDDLE;
+            } else {
+                detectionResult = DetectionResult.RIGHT;
+            }
         } else {
-            detectionResult = DetectionResult.LEFT;
+            if (averagedLeftBox > allianceBasedThreshold) {
+                detectionResult = DetectionResult.MIDDLE;
+            } else if (averagedRightBox > allianceBasedThreshold){
+                detectionResult = DetectionResult.RIGHT;
+            } else {
+                detectionResult = DetectionResult.LEFT;
+            }
         }
 
         if (!ScrappySettings.IS_COMPETITION) {

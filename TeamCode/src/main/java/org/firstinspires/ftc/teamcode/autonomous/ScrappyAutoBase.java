@@ -28,7 +28,7 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
     protected final ScrappySettings.AllianceType m_allianceType;
     protected final ScrappySettings.AllianceSide m_allianceSide;
     protected final Pose2d m_startingPose;
-    public static PropDetector.DetectionResult detectionResult = PropDetector.DetectionResult.LEFT;
+    public PropDetector.DetectionResult detectionResult = PropDetector.DetectionResult.LEFT;
     public ScrappyCore robot;
     public WebcamName webcam1, webcam2;
 
@@ -66,15 +66,14 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
         CameraName switchableCamera = ClassFactory.getInstance()
                 .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
-//        propDetectionProcessor = new PropDetectionProcessor(m_allianceType, m_allianceSide);
+        propDetectionProcessor = new PropDetectionProcessor(m_allianceType, m_allianceSide);
         aprilTagProcessor = new AprilTagProcessor.Builder().build();
-        stackProcessor = new StackProcessor();
         vision = new VisionPortal.Builder()
                 .setCamera(switchableCamera)
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .addProcessors(aprilTagProcessor, stackProcessor)
+                .addProcessors(aprilTagProcessor, propDetectionProcessor)
                 .build();
 
         while (vision.getCameraState() != VisionPortal.CameraState.STREAMING) {
@@ -85,22 +84,21 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
 
         vision.setActiveCamera(webcam2);
         vision.setProcessorEnabled(aprilTagProcessor, false);
-        vision.setProcessorEnabled(stackProcessor, false);
+        vision.setProcessorEnabled(propDetectionProcessor, true);
 
         telemetry.addLine("Initializing trajectories...");
         telemetry.update();
         initAuto();
 
         while (opModeInInit()) {
-//            detectionResult = PropDetector.DetectionResult.MIDDLE;
-//            detectionResult = propDetectionProcessor.getDetectionResult();
+            detectionResult = propDetectionProcessor.getDetectionResult();
             telemetry.addData("Detected", detectionResult);
             telemetry.update();
             sleep(25);
         }
 
         vision.setProcessorEnabled(aprilTagProcessor, true);
-//        vision.setProcessorEnabled(propDetectionProcessor, false);
+        vision.setProcessorEnabled(propDetectionProcessor, false);
 
         startAuto();
     }

@@ -35,7 +35,7 @@ public class RunFarCycle extends SequentialCommandGroup {
                 new InstantCommand(() -> base.vision.setActiveCamera(base.webcam1)),
                 new RunAction(backboardTraj),
                 new InstantCommand(base.robot.m_outtake::drop),
-                new WaitCommand(100),
+                new WaitCommand(250),
                 new InstantCommand(() -> base.robot.m_lift.setRelativePosition(100)),
                 new WaitUntilCommand(() -> base.robot.m_lift.isWithinTolerance(750))
         );

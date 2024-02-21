@@ -44,6 +44,11 @@ public class Lift extends SubsystemBase {
         m_rightMotor.setTargetPosition(0);
     }
 
+    public void reset() {
+        m_leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m_rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     public void setPosition(int pos) {
         m_leftMotor.setTargetPosition(pos);
         m_rightMotor.setTargetPosition(pos);

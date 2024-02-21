@@ -112,6 +112,7 @@ public final class TuningOpModes {
         manager.register(metaForClass(ManualFeedbackTuner.class), ManualFeedbackTuner.class);
         manager.register(metaForClass(ParallelSlidesTuner.class), ParallelSlidesTuner.class);
         manager.register(metaForClass(ParallelSlidesVelTuner.class), ParallelSlidesVelTuner.class);
+        manager.register(metaForClass(CameraOffsetTuner.class), CameraOffsetTuner.class);
 
         FtcDashboard.getInstance().withConfigRoot(configRoot -> {
             for (Class<?> c : Arrays.asList(
@@ -122,7 +123,8 @@ public final class TuningOpModes {
                     MecanumMotorDirectionDebugger.class,
                     ManualFeedbackTuner.class,
                     ParallelSlidesTuner.class,
-                    ParallelSlidesVelTuner.class
+                    ParallelSlidesVelTuner.class,
+                    CameraOffsetTuner.class
             )) {
                 configRoot.putVariable(c.getSimpleName(), ReflectionConfig.createVariableFromClass(c));
             }

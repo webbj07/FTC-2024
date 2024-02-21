@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous.blue;
+package org.firstinspires.ftc.teamcode.autonomous.old.blue;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -17,14 +17,14 @@ import org.firstinspires.ftc.teamcode.commands.DriveToAprilTag;
 import org.firstinspires.ftc.teamcode.commands.RunAction;
 import org.firstinspires.ftc.teamcode.commands.RunFarCycle;
 
-public class BlueFar2Plus3 extends ScrappyAutoBase {
+public class BlueFar2Plus3Slow extends ScrappyAutoBase {
     public static Pose2d startingPose = new Pose2d(-38, 61.75, Math.toRadians(270));
     private Action
             leftStackTraj, middleStackTraj, rightStackTraj,
             leftBackboardTraj, middleBackboardTraj, rightBackboardTraj,
             leftStackCycleTraj, middleStackCycleTraj, rightStackCycleTraj,
             backboardCycleTraj, endTraj;
-    public BlueFar2Plus3() {
+    public BlueFar2Plus3Slow() {
         super(ScrappySettings.AllianceType.BLUE, ScrappySettings.AllianceSide.FAR, startingPose);
     }
 
@@ -33,7 +33,7 @@ public class BlueFar2Plus3 extends ScrappyAutoBase {
         // Left
         leftStackTraj = robot.m_drive.actionBuilder(startingPose)
                 .stopAndAdd(robot.m_intake::lower)
-                .splineToLinearHeading(new Pose2d(-36.5, 37, Math.toRadians(330)), 0)
+                .splineToLinearHeading(new Pose2d(-35, 37, Math.toRadians(330)), 0)
                 .stopAndAdd(() -> robot.m_intake.back())
                 .waitSeconds(0.25)
                 .stopAndAdd(() -> robot.m_intake.raise())
@@ -51,7 +51,7 @@ public class BlueFar2Plus3 extends ScrappyAutoBase {
                 .setReversed(true)
                 .splineToConstantHeading(new Vector2d(5, 59.5), 0)
                 .splineToConstantHeading(new Vector2d(26.4, 59.5), 0)
-                .afterDisp(20, () -> {
+                .afterDisp(16, () -> {
                     robot.m_outtake.extend(-0.07);
                     robot.m_lift.setRelativePosition(480);
                     robot.m_conveyor.stop();
@@ -103,10 +103,10 @@ public class BlueFar2Plus3 extends ScrappyAutoBase {
                     robot.m_conveyor.stop();
                     robot.m_intake.stop();
                 })
-                .splineToConstantHeading(new Vector2d(52, 34), 0)
+                .splineToConstantHeading(new Vector2d(52, 35), 0)
                 .build();
 
-        middleStackCycleTraj = robot.m_drive.actionBuilder(new Pose2d(52, 34, Math.toRadians(180)))
+        middleStackCycleTraj = robot.m_drive.actionBuilder(new Pose2d(52, 35, Math.toRadians(180)))
                 .afterDisp(5, () -> {
                     robot.m_lift.toInitial();
                     robot.m_outtake.back();
@@ -182,10 +182,10 @@ public class BlueFar2Plus3 extends ScrappyAutoBase {
                     robot.m_conveyor.stop();
                     robot.m_intake.stop();
                 })
-                .splineToConstantHeading(new Vector2d(52.5, 41.5), 0)
+                .splineToConstantHeading(new Vector2d(52.5, 41), 0)
                 .build();
 
-        endTraj = robot.m_drive.actionBuilder(new Pose2d(52.5, 41.5, Math.toRadians(180)))
+        endTraj = robot.m_drive.actionBuilder(new Pose2d(52.5, 41, Math.toRadians(180)))
                 .lineToX(43)
                 .afterDisp(3, () -> {
                     robot.m_lift.toInitial();
