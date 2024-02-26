@@ -15,8 +15,8 @@ public class MeepMeepTesting {
     }
     public static final double chassisWidth = 15;
     public static final double chassisHeight = 17.5;
-    public static final double maxVel = 50;
-    public static final double maxAccel = 50;
+    public static final double maxVel = 75;
+    public static final double maxAccel = 75;
     public static final double maxAngVel = Math.PI;
     public static final double maxAngAccel = Math.PI;
     public static final double trackWidth = 12.9;
@@ -38,8 +38,8 @@ public class MeepMeepTesting {
 //                .strafeTo(new Vector2d(11.5, 36.5))
 //                .strafeToLinearHeading(new Vector2d(51.5, 35), Math.PI)
 
-                .splineToLinearHeading(new Pose2d(10, 37, Math.toRadians(210)), Math.PI)
-                .strafeToLinearHeading(new Vector2d(51.5, 28.5), Math.PI)
+//                .splineToLinearHeading(new Pose2d(10, 37, Math.toRadians(210)), Math.PI)
+//                .strafeToLinearHeading(new Vector2d(51.5, 28.5), Math.PI)
                 .endTrajectory()
 
                 // l 18.89
@@ -57,6 +57,18 @@ public class MeepMeepTesting {
 
                 .strafeToConstantHeading(new Vector2d(30, 11.5))
                 .splineToConstantHeading(new Vector2d(52, 30), 0)
+                .endTrajectory()
+
+                .splineToConstantHeading(new Vector2d(30, 11.5), Math.PI)
+                .splineToConstantHeading(new Vector2d(-30, 11.5), Math.PI)
+                .splineToSplineHeading(new Pose2d(-40, 11.5, Math.toRadians(150)), Math.PI)
+                .endTrajectory()
+
+                .strafeToLinearHeading(new Vector2d(-61, 11.5), Math.toRadians(180))
+                .endTrajectory()
+
+                .strafeToConstantHeading(new Vector2d(30, 11.5))
+                .splineToConstantHeading(new Vector2d(49, 29.5), 0)
                 .endTrajectory()
 
                 .splineToConstantHeading(new Vector2d(30, 11.5), Math.PI)
@@ -251,7 +263,7 @@ public class MeepMeepTesting {
                 .splineToConstantHeading(new Vector2d(58, 11.5), 0)
                 .build();
 
-        robot.runAction(funnyAuto);
+        robot.runAction(blueFar2);
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)

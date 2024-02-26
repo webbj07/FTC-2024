@@ -25,6 +25,11 @@ public class PathBuilder {
         return this;
     }
 
+    public PathBuilder setLinearHeadingInterpolation(double startHeading, double endHeading, double endTime) {
+        this.paths.get(paths.size()-1).setLinearHeadingInterpolation(startHeading, endHeading, endTime);
+        return this;
+    }
+
     public PathBuilder setConstantHeadingInterpolation(double setHeading) {
         this.paths.get(paths.size()-1).setConstantHeadingInterpolation(setHeading);
         return this;

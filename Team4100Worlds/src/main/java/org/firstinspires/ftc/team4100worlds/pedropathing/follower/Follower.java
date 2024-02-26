@@ -13,8 +13,12 @@ import static org.firstinspires.ftc.team4100worlds.FollowerConstants.smallTransl
 import static org.firstinspires.ftc.team4100worlds.FollowerConstants.translationalPIDFSwitch;
 import static org.firstinspires.ftc.team4100worlds.FollowerConstants.zeroPowerAccelerationMultiplier;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -29,6 +33,7 @@ import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Path;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.PathBuilder;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.PathCallback;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.PathChain;
+import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Vector;
 import org.firstinspires.ftc.team4100worlds.util.PIDFController;
 
@@ -38,6 +43,8 @@ import java.util.List;
 
 @Config
 public class Follower {
+    public static int POSE_HISTORY_LIMIT = 100;
+
     private HardwareMap hardwareMap;
 
     private DcMotorEx leftFront, leftRear, rightFront, rightRear;
@@ -69,6 +76,7 @@ public class Follower {
 
     private Vector[] teleOpMovementVectors = new Vector[] {new Vector(0,0), new Vector(0,0), new Vector(0,0)};
 
+    private ArrayList<Pose2d> poseHistory = new ArrayList<>();
     private ArrayList<Pose2d> deltaPoses = new ArrayList<>();
     private ArrayList<Pose2d> deltaDeltaPoses = new ArrayList<>();
 
@@ -284,7 +292,7 @@ public class Follower {
                         motors.get(i).setPower(drivePowers[i]);
                     }
                 }
-                if (currentPath.isAtParametricEnd()) {
+                if (currentPath != null && currentPath.isAtParametricEnd()) {
                     if (followingPathChain && chainIndex < currentPathChain.size() - 1) {
                         // Not at last path, keep going
                         breakFollowing();
@@ -322,6 +330,42 @@ public class Follower {
                 motors.get(i).setPower(drivePowers[i]);
             }
         }
+
+        Pose2d pose = poseUpdater.getPose();
+
+        poseHistory.add(pose);
+
+        if (POSE_HISTORY_LIMIT > -1 && poseHistory.size() > POSE_HISTORY_LIMIT) {
+            poseHistory.remove(0);
+        }
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+
+        double robotLength = 19.5;
+        double robotWidth = 15.15;
+
+        TelemetryPacket packet = new TelemetryPacket();
+        Canvas fieldOverlay = packet.fieldOverlay();
+        fieldOverlay.setStrokeWidth(1);
+
+        // Draw robot (current pose)
+        fieldOverlay.setStroke("#3F51B5");
+        drawRobot(fieldOverlay, poseUpdater.getPose(), robotLength / 2);
+
+        // Draw pose history
+        drawPoseHistory(fieldOverlay, poseHistory);
+
+        if (currentPath != null) {
+            // Draw robot (target pose)
+            fieldOverlay.setStroke("#4CAF50");
+            Point lastControlPoint = currentPath.getLastControlPoint();
+            drawRobot(fieldOverlay, new Pose2d(lastControlPoint.getX(), lastControlPoint.getY(), lastControlPoint.getTheta()), robotLength / 2);
+
+            // Draw path
+            drawPath(fieldOverlay, currentPath, 2.0);
+        }
+
+        dashboard.sendTelemetryPacket(packet);
     }
 
     /**
@@ -663,5 +707,38 @@ public class Follower {
 
     public PathBuilder pathBuilder() {
         return new PathBuilder();
+    }
+
+    public static void drawPoseHistory(Canvas canvas, List<Pose2d> poseHistory) {
+        double[] xPoints = new double[poseHistory.size()];
+        double[] yPoints = new double[poseHistory.size()];
+        for (int i = 0; i < poseHistory.size(); i++) {
+            Pose2d pose = poseHistory.get(i);
+            xPoints[i] = pose.getX();
+            yPoints[i] = pose.getY();
+        }
+        canvas.strokePolyline(xPoints, yPoints);
+    }
+
+    public static void drawPath(Canvas canvas, Path path, double resolution) {
+        int samples = (int) Math.ceil(path.length() / resolution);
+        double[] xPoints = new double[samples];
+        double[] yPoints = new double[samples];
+        double dx = path.length() / (samples - 1);
+        for (int i = 0; i < samples; i++) {
+            double displacement = i * dx;
+            Point pose = path.getPoint(displacement);
+            xPoints[i] = pose.getX();
+            yPoints[i] = pose.getY();
+        }
+        canvas.strokePolyline(xPoints, yPoints);
+    }
+
+    public static void drawRobot(Canvas canvas, Pose2d pose, double robotRadius) {
+        canvas.strokeCircle(pose.getX(), pose.getY(), robotRadius);
+        Vector2d v = pose.headingVec().times(robotRadius);
+        double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
+        double x2 = pose.getX() + v.getX(), y2 = pose.getY() + v.getY();
+        canvas.strokeLine(x1, y1, x2, y2);
     }
 }

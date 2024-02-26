@@ -11,8 +11,8 @@ import org.firstinspires.ftc.team4100worlds.util.CustomPIDFCoefficients;
 public class FollowerConstants {
 
     // This section is for setting the actual drive vector for the front left wheel
-    private static double xMovement = 73.89729314801279;
-    private static double yMovement = -50.05497614903902;
+    private static double xMovement = 70;
+    private static double yMovement = -53.6;
     private static double[] convertToPolar = Point.cartesianToPolar(xMovement, yMovement);
     public static Vector frontLeftVector = MathFunctions.normalizeVector(new Vector(convertToPolar[0],convertToPolar[1]));
 
@@ -21,9 +21,9 @@ public class FollowerConstants {
 
     // Large heading error PIDF coefficients
     public static CustomPIDFCoefficients largeHeadingPIDFCoefficients = new CustomPIDFCoefficients(
-            1,
+            1.3,
             0,
-            0,
+            0.001,
             0);
 
     public static double largeHeadingPIDFFeedForward = 0.01;
@@ -32,18 +32,18 @@ public class FollowerConstants {
 
     // Small heading error PIDF coefficients
     public static CustomPIDFCoefficients smallHeadingPIDFCoefficients = new CustomPIDFCoefficients(
-            1,
+            2.3,
             0,
-            0.08,
+            0.003,
             0);
 
     public static double smallHeadingPIDFFeedForward = 0.01;
 
     // Small translational PIDF coefficients
     public static CustomPIDFCoefficients smallTranslationalPIDFCoefficients = new CustomPIDFCoefficients(
-            0.3,
+            0.1,
             0,
-            0.01,
+            0,
             0);
 
     // Small translational Integral value
@@ -64,7 +64,7 @@ public class FollowerConstants {
             0,
             0);
 
-    public static double largeTranslationalPIDFFeedForward = 0.015;
+    public static double largeTranslationalPIDFFeedForward = 0.01;
 
     // Large translational Integral
     public static CustomPIDFCoefficients largeTranslationalIntegral = new CustomPIDFCoefficients(
@@ -77,7 +77,7 @@ public class FollowerConstants {
     public static CustomPIDFCoefficients smallDrivePIDFCoefficients = new CustomPIDFCoefficients(
             0.02,
             0,
-            0,
+            0.001,
             0);
 
     public static double smallDrivePIDFFeedForward = 0.01;
@@ -99,17 +99,17 @@ public class FollowerConstants {
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
     // this is for curves
-    public static double forwardZeroPowerAcceleration = -26.244263158206856;
+    public static double forwardZeroPowerAcceleration = -23.5;
 
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
     // this is for curves
-    public static double lateralZeroPowerAcceleration = -66.98683177684926;
+    public static double lateralZeroPowerAcceleration = -61.5;
 
     // A multiplier for the zero power acceleration to increase the speed of the robot.
     // increasing this will cause the robot to drive faster, at the risk of end of path overshoots or localization slippage
     // decreasing this will cause the deceleration at the end of the path to be less, making the robot slower but reducing risk of end of path overshoots or localization slippage
-    public static double zeroPowerAccelerationMultiplier = 4;
+    public static double zeroPowerAccelerationMultiplier = 3;
 
     // When the drivetrain is at the end of its current path or path chain and the velocity goes
     // below this value, then end the path. This is in inches/second
