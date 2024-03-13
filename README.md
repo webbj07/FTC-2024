@@ -11,7 +11,7 @@ To use this code, download/clone the project to your local computer.
 
 |Team Number|Current Status|Is playing|
 |-|-|-|
-|4100|Qualified for State|Yes|
+|4100|Qualified for Worlds|Yes|
 |5100|5th in League Meet|Finished|
 
 ## Questions
