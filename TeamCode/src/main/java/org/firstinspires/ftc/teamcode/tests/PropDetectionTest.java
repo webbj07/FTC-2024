@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.vision.PropDetectionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 
@@ -19,7 +19,7 @@ public class PropDetectionTest extends LinearOpMode {
         CameraName switchableCamera = ClassFactory.getInstance()
                 .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
-        PropDetectionProcessor propProcessor = new PropDetectionProcessor(ScrappySettings.AllianceType.RED, ScrappySettings.AllianceSide.FAR);
+        PropDetectionProcessor propProcessor = new PropDetectionProcessor(ScrappyConstants.AllianceType.RED, ScrappyConstants.AllianceSide.FAR);
 
         VisionPortal portal = new VisionPortal.Builder()
                 .setCamera(switchableCamera)

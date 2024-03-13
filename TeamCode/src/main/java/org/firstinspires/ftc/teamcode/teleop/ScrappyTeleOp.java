@@ -155,13 +155,13 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
         /* Driver Two */
         // Plane
         m_driverTwo.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelExtendPos(0.1)));
+                .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelExtendPos(0.05)));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelExtendPos(-0.1)));
+                .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelExtendPos(-0.05)));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new InstantCommand(() -> robot.m_plane.setRelPos(-0.1)));
+                .whenPressed(new InstantCommand(() -> robot.m_intake.setExtendRelPos(-0.05)));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new InstantCommand(() -> robot.m_plane.setRelPos(0.1)));
+                .whenPressed(new InstantCommand(() -> robot.m_intake.setExtendRelPos(0.05)));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(new InstantCommand(robot.m_plane::back));
         m_driverTwo.getGamepadButton(GamepadKeys.Button.B)
@@ -247,6 +247,9 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
         telemetry.addData("rawHeading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + 180);
         telemetry.addData("ls", robot.m_sensor.m_leftSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("rs", robot.m_sensor.m_rightSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("intakeex", robot.m_intake.getExtendPos());
+        telemetry.addData("dropper", robot.m_outtake.getDropperPos());
+        telemetry.addData("outtakeex", robot.m_outtake.getExtendPos());
         telemetry.update();
     }
 

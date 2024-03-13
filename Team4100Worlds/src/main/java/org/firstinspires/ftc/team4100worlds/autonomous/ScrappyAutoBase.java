@@ -2,15 +2,19 @@ package org.firstinspires.ftc.team4100worlds.autonomous;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.team4100worlds.ScrappyCore;
-import org.firstinspires.ftc.team4100worlds.ScrappySettings;
+import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
 import org.firstinspires.ftc.team4100worlds.commands.InitPositions;
 import org.firstinspires.ftc.team4100worlds.interfaces.PropDetector;
 import org.firstinspires.ftc.team4100worlds.vision.PropDetectionProcessor;
@@ -23,8 +27,8 @@ import java.util.ArrayList;
 
 @Config
 public abstract class ScrappyAutoBase extends CommandOpMode {
-    protected final ScrappySettings.AllianceType m_allianceType;
-    protected final ScrappySettings.AllianceSide m_allianceSide;
+    protected final ScrappyConstants.AllianceType m_allianceType;
+    protected final ScrappyConstants.AllianceSide m_allianceSide;
     public PropDetector.DetectionResult detectionResult = PropDetector.DetectionResult.LEFT;
     public ScrappyCore robot;
     public WebcamName webcam1, webcam2;
@@ -34,8 +38,9 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
     protected AprilTagProcessor aprilTagProcessor;
     public StackProcessor stackProcessor;
     public VisionPortal vision;
+    private ElapsedTime elapsedTime = new ElapsedTime();
 
-    public ScrappyAutoBase(ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide, Pose2d startPose) {
+    public ScrappyAutoBase(ScrappyConstants.AllianceType allianceType, ScrappyConstants.AllianceSide allianceSide, Pose2d startPose) {
         m_allianceType = allianceType;
         m_allianceSide = allianceSide;
         m_startPose = startPose;
@@ -51,11 +56,15 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
 
     @Override
     public void initialize() {
+        if (!ScrappyConstants.IS_COMPETITION) {
+            telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        }
+
         robot = new ScrappyCore(hardwareMap, m_allianceType, m_allianceSide);
         robot.m_drive.setStartingPose(m_startPose);
-        new InitPositions(robot.m_lift, robot.m_outtake, robot.m_intake).schedule();
+        new InitPositions(robot.m_outtake, robot.m_intake).schedule();
 
-        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 2");
         webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
         CameraName switchableCamera = ClassFactory.getInstance()
                 .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
@@ -95,7 +104,7 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
 
         vision.setProcessorEnabled(propDetectionProcessor, false);
 
-        if (m_allianceSide == ScrappySettings.AllianceSide.FAR) {
+        if (m_allianceSide == ScrappyConstants.AllianceSide.FAR) {
             vision.setProcessorEnabled(aprilTagProcessor, true);
         } else {
             vision.setProcessorEnabled(stackProcessor, true);
@@ -106,8 +115,18 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
 
     @Override
     public void run() {
-        super.run();
+        CommandScheduler.getInstance().run();
         robot.m_drive.update();
+
+//        Pose2d currentPose = robot.m_drive.getPose();
+
+//        telemetry.addData("hz", 1000 / elapsedTime.milliseconds());
+//        telemetry.addData("x", currentPose.getX());
+//        telemetry.addData("y", currentPose.getY());
+//        telemetry.addData("heading", currentPose.getHeading());
+//        telemetry.addData("velMag", robot.m_drive.getVelocityMagnitude());
+        telemetry.update();
+        elapsedTime.reset();
     }
 
     public abstract void initAuto();

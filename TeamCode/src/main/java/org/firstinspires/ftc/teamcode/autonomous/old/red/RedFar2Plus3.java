@@ -3,20 +3,16 @@ package org.firstinspires.ftc.teamcode.autonomous.old.red;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.autonomous.ScrappyAutoBase;
 import org.firstinspires.ftc.teamcode.commands.DriveToAprilTag;
 import org.firstinspires.ftc.teamcode.commands.RunAction;
-import org.firstinspires.ftc.teamcode.commands.RunFarCycle;
 
 public class RedFar2Plus3 extends ScrappyAutoBase {
     public static Pose2d startingPose = new Pose2d(-38, -61.75, Math.toRadians(90));
@@ -26,7 +22,7 @@ public class RedFar2Plus3 extends ScrappyAutoBase {
             leftStackCycleTraj, middleStackCycleTraj, rightStackCycleTraj,
             backboardCycleTraj, endTraj;
     public RedFar2Plus3() {
-        super(ScrappySettings.AllianceType.RED, ScrappySettings.AllianceSide.FAR, startingPose);
+        super(ScrappyConstants.AllianceType.RED, ScrappyConstants.AllianceSide.FAR, startingPose);
     }
 
     @Override

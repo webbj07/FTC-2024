@@ -3,15 +3,13 @@ package org.firstinspires.ftc.teamcode.autonomous.old.blue;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.autonomous.ScrappyAutoBase;
 import org.firstinspires.ftc.teamcode.commands.DriveToAprilTag;
 import org.firstinspires.ftc.teamcode.commands.RunAction;
@@ -25,7 +23,7 @@ public class BlueFar2Plus3Slow extends ScrappyAutoBase {
             leftStackCycleTraj, middleStackCycleTraj, rightStackCycleTraj,
             backboardCycleTraj, endTraj;
     public BlueFar2Plus3Slow() {
-        super(ScrappySettings.AllianceType.BLUE, ScrappySettings.AllianceSide.FAR, startingPose);
+        super(ScrappyConstants.AllianceType.BLUE, ScrappyConstants.AllianceSide.FAR, startingPose);
     }
 
     @Override

@@ -9,7 +9,7 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.autonomous.ScrappyAutoBase;
 import org.firstinspires.ftc.teamcode.commands.LocalizeWithAprilTag;
 import org.firstinspires.ftc.teamcode.commands.RunAction;
@@ -26,7 +26,7 @@ public class BlueClose2Plus4AT extends ScrappyAutoBase {
             leftEndTraj, middleEndTraj, rightEndTraj;
 
     public BlueClose2Plus4AT() {
-        super(ScrappySettings.AllianceType.BLUE, ScrappySettings.AllianceSide.CLOSE, startingPose);
+        super(ScrappyConstants.AllianceType.BLUE, ScrappyConstants.AllianceSide.CLOSE, startingPose);
     }
 
     @Override

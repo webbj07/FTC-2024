@@ -8,17 +8,17 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.teamcode.util.PoseStorage;
 import org.firstinspires.ftc.teamcode.ScrappyCore;
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.commands.InitPositions;
 
 public abstract class ScrappyTeleOpBase extends CommandOpMode {
-    private final ScrappySettings.AllianceType m_allianceType;
-    private final ScrappySettings.AllianceSide m_allianceSide;
+    private final ScrappyConstants.AllianceType m_allianceType;
+    private final ScrappyConstants.AllianceSide m_allianceSide;
 
     protected ScrappyCore robot;
     protected IMU imu;
 
-    public ScrappyTeleOpBase(ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide) {
+    public ScrappyTeleOpBase(ScrappyConstants.AllianceType allianceType, ScrappyConstants.AllianceSide allianceSide) {
         m_allianceType = allianceType;
         m_allianceSide = allianceSide;
     }
@@ -29,7 +29,7 @@ public abstract class ScrappyTeleOpBase extends CommandOpMode {
 
         robot = new ScrappyCore(hardwareMap, m_allianceType, m_allianceSide, PoseStorage.currentPose);
         imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(ScrappySettings.CONTROL_HUB_ORIENTATION);
+        IMU.Parameters parameters = new IMU.Parameters(ScrappyConstants.CONTROL_HUB_ORIENTATION);
         imu.initialize(parameters);
 
         new InitPositions(robot.m_lift, robot.m_outtake, robot.m_intake).schedule();

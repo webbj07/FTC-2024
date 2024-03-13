@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.subsystem.Plane;
 import org.firstinspires.ftc.teamcode.subsystem.SensorLocalization;
 
 public class ScrappyCore extends Robot {
-    public final ScrappySettings.AllianceType ALLIANCE_TYPE;
-    public final ScrappySettings.AllianceSide ALLIANCE_SIDE;
+    public final ScrappyConstants.AllianceType ALLIANCE_TYPE;
+    public final ScrappyConstants.AllianceSide ALLIANCE_SIDE;
 
     // Subsystems
     public MecanumDrive m_drive;
@@ -24,7 +24,7 @@ public class ScrappyCore extends Robot {
     public Plane m_plane;
     public SensorLocalization m_sensor;
 
-    public ScrappyCore(HardwareMap hardwareMap, ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide, Pose2d startPose) {
+    public ScrappyCore(HardwareMap hardwareMap, ScrappyConstants.AllianceType allianceType, ScrappyConstants.AllianceSide allianceSide, Pose2d startPose) {
         ALLIANCE_TYPE = allianceType;
         ALLIANCE_SIDE = allianceSide;
 

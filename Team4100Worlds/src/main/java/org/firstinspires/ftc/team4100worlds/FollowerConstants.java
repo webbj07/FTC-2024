@@ -21,12 +21,12 @@ public class FollowerConstants {
 
     // Large heading error PIDF coefficients
     public static CustomPIDFCoefficients largeHeadingPIDFCoefficients = new CustomPIDFCoefficients(
-            1.3,
+            2,
             0,
-            0.001,
+            0.003,
             0);
 
-    public static double largeHeadingPIDFFeedForward = 0.01;
+    public static double largeHeadingPIDFFeedForward = 0.015;
 
     public static double headingPIDFSwitch = Math.PI/20;
 
@@ -34,14 +34,14 @@ public class FollowerConstants {
     public static CustomPIDFCoefficients smallHeadingPIDFCoefficients = new CustomPIDFCoefficients(
             2.3,
             0,
-            0.003,
+            0.1,
             0);
 
-    public static double smallHeadingPIDFFeedForward = 0.01;
+    public static double smallHeadingPIDFFeedForward = 0.015;
 
     // Small translational PIDF coefficients
     public static CustomPIDFCoefficients smallTranslationalPIDFCoefficients = new CustomPIDFCoefficients(
-            0.1,
+            0.05,
             0,
             0,
             0);
@@ -61,7 +61,7 @@ public class FollowerConstants {
     public static CustomPIDFCoefficients largeTranslationalPIDFCoefficients = new CustomPIDFCoefficients(
             0.1,
             0,
-            0,
+            0.005,
             0);
 
     public static double largeTranslationalPIDFFeedForward = 0.01;
@@ -75,9 +75,9 @@ public class FollowerConstants {
 
     // Small drive PIDF coefficients
     public static CustomPIDFCoefficients smallDrivePIDFCoefficients = new CustomPIDFCoefficients(
-            0.02,
+            0.04,
             0,
-            0.001,
+            0,
             0);
 
     public static double smallDrivePIDFFeedForward = 0.01;
@@ -86,9 +86,9 @@ public class FollowerConstants {
 
     // Large drive PIDF coefficients
     public static CustomPIDFCoefficients largeDrivePIDFCoefficients = new CustomPIDFCoefficients(
-            0.02,
+            0.04,
             0,
-            0.001,
+            0,
             0);
 
     public static double largeDrivePIDFFeedForward = 0.01;

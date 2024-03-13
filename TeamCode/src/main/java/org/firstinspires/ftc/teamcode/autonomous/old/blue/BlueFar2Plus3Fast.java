@@ -9,7 +9,7 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.autonomous.ScrappyAutoBase;
 import org.firstinspires.ftc.teamcode.commands.DriveToAprilTag;
 import org.firstinspires.ftc.teamcode.commands.RunAction;
@@ -23,7 +23,7 @@ public class BlueFar2Plus3Fast extends ScrappyAutoBase {
             leftStackCycleTraj, middleStackCycleTraj, rightStackCycleTraj,
             backboardCycleTraj, endTraj;
     public BlueFar2Plus3Fast() {
-        super(ScrappySettings.AllianceType.BLUE, ScrappySettings.AllianceSide.FAR, startingPose);
+        super(ScrappyConstants.AllianceType.BLUE, ScrappyConstants.AllianceSide.FAR, startingPose);
     }
 
     @Override

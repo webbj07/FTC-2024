@@ -8,7 +8,7 @@ public class Outtake extends SubsystemBase {
     public final static double DROP_POS = 0.82;
     public final static double BACK_POS = 0.68;
     public final static double EXTEND_LOW = 0.96;
-    public final static double EXTEND_HIGH = 0.51;
+    public final static double EXTEND_HIGH = 0.65;
     private final Servo m_dropper, m_leftExtend, m_rightExtend;
 
     public Outtake(final HardwareMap hwMap) {
@@ -20,6 +20,10 @@ public class Outtake extends SubsystemBase {
 
         m_leftExtend.setPosition(EXTEND_LOW);
 //        m_rightExtend.setPosition(EXTEND_LOW);
+    }
+
+    public double getExtendPos() {
+        return m_leftExtend.getPosition();
     }
 
     public void extend() {

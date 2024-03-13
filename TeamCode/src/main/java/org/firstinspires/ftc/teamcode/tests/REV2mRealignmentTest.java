@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.subsystem.SensorLocalization;
 
 @Autonomous
@@ -23,7 +23,7 @@ public class REV2mRealignmentTest extends LinearOpMode {
             double dL = sensors.getLeftDistance();
             double dR = sensors.getRightDistance();
 
-            angle = Math.atan(Math.abs((dR - dL)) / ScrappySettings.DISTANCE_SENSOR_WIDTH);
+            angle = Math.atan(Math.abs((dR - dL)) / ScrappyConstants.DISTANCE_SENSOR_WIDTH);
 
             telemetry.addLine("Left distance (inches): " + dL);
             telemetry.addLine("Right distance (inches): " + dR);

@@ -1,13 +1,13 @@
-package org.firstinspires.ftc.team4100worlds;
+package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.xyzOrientation;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 @Config
-public class ScrappySettings {
+public class ScrappyConstants {
     public enum AllianceType {
         BLUE, RED
     }
@@ -16,6 +16,13 @@ public class ScrappySettings {
     }
 
     public static boolean IS_COMPETITION = false;
+
+    /*
+     * These are the relative positions of each component from the center of the
+     * robot (inches).
+     */
+    public static Vector2d FRONT_CAMERA_POSITION = new Vector2d(-0.5, 5.5);
+    public static Vector2d BACK_CAMERA_POSITION = new Vector2d(-4, 7);
     public static double FRONT_CAMERA_OFFSET_X = -0.5;
     public static double FRONT_CAMERA_OFFSET_Y = 5.5;
     public static double BACK_CAMERA_OFFSET_X = -4;

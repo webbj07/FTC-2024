@@ -31,7 +31,6 @@ import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -215,7 +214,7 @@ public final class MecanumDrive {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        imu = new LazyImu(hardwareMap, "imu", ScrappySettings.CONTROL_HUB_ORIENTATION);
+        imu = new LazyImu(hardwareMap, "imu", ScrappyConstants.CONTROL_HUB_ORIENTATION);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 

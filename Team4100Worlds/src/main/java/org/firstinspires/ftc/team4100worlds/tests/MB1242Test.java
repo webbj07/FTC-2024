@@ -29,40 +29,35 @@
 
 package org.firstinspires.ftc.team4100worlds.tests;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-/*
- * This OpMode illustrates how to use the Modern Robotics Range Sensor.
- *
- * The OpMode assumes that the range sensor is configured with a name of "sensor_range".
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- *
- * @see <a href="http://modernroboticsinc.com/range-sensor">MR Range Sensor</a>
- */
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.team4100worlds.util.MB1242;
+
 @TeleOp
-public class SensorMRRangeSensor extends LinearOpMode {
-    ModernRoboticsI2cRangeSensor left, right, front;
+public class MB1242Test extends LinearOpMode {
+    private MB1242 front, left, right;
 
     @Override public void runOpMode() {
+        front = hardwareMap.get(MB1242.class, "FrontDistance");
+        left = hardwareMap.get(MB1242.class, "LeftDistance");
+        right = hardwareMap.get(MB1242.class, "RightDistance");
 
-        // get a reference to our compass
-        left = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "LeftDistance");
-        right = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RightDistance");
-        front = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "FrontDistance");
-
-        // wait for the start button to be pressed
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("left", "%.2f in", left.getDistance(DistanceUnit.INCH));
-            telemetry.addData("right", "%.2f in", right.getDistance(DistanceUnit.INCH));
-            telemetry.addData("front", "%.2f in", front.getDistance(DistanceUnit.INCH));
+            if (isStopRequested()) return;
+
+            front.ping();
+            left.ping();
+            right.ping();
+
+            sleep(125);
+
+            telemetry.addData("front", "%.4f (in)", front.getDistance(DistanceUnit.INCH));
+            telemetry.addData("left", "%.4f (in)", left.getDistance(DistanceUnit.INCH));
+            telemetry.addData("right", "%.4f (in)", right.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
     }

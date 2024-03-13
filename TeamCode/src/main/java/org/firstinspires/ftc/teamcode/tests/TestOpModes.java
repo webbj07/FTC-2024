@@ -5,11 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 
 public final class TestOpModes {
     public static final String GROUP = "testing";
-    public static final boolean DISABLED = ScrappySettings.IS_COMPETITION;
+    public static final boolean DISABLED = ScrappyConstants.IS_COMPETITION;
 
     private TestOpModes() {}
 

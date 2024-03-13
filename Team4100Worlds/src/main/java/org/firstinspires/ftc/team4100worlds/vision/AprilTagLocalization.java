@@ -4,13 +4,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.team4100worlds.ScrappySettings;
+import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
 import org.firstinspires.ftc.team4100worlds.interfaces.PropDetector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class AprilTagLocalization {
-    public static int getBackboardIdFromDetection(ScrappySettings.AllianceType alliance, PropDetector.DetectionResult detectionResult) {
-        if (alliance == ScrappySettings.AllianceType.BLUE) {
+    public static int getBackboardIdFromDetection(ScrappyConstants.AllianceType alliance, PropDetector.DetectionResult detectionResult) {
+        if (alliance == ScrappyConstants.AllianceType.BLUE) {
             switch (detectionResult) {
                 case LEFT:
                     return 1;
@@ -86,8 +86,8 @@ public class AprilTagLocalization {
     }
 
     public static Pose2d getRobotPositionFromTag(AprilTagDetection detection, double robotHeading, boolean isBackCamera) {
-        double offset_x = isBackCamera ? ScrappySettings.BACK_CAMERA_OFFSET_X : ScrappySettings.FRONT_CAMERA_OFFSET_X;
-        double offset_y = isBackCamera ? ScrappySettings.BACK_CAMERA_OFFSET_Y : ScrappySettings.FRONT_CAMERA_OFFSET_Y;
+        double offset_x = isBackCamera ? ScrappyConstants.BACK_CAMERA_POSITION.getX() : ScrappyConstants.FRONT_CAMERA_POSITION.getX();
+        double offset_y = isBackCamera ? ScrappyConstants.BACK_CAMERA_POSITION.getY() : ScrappyConstants.FRONT_CAMERA_POSITION.getY();
 
         double x = detection.ftcPose.x + offset_x;
         double y = detection.ftcPose.y + offset_y;

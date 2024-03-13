@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.team4100worlds.commands;
 
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.FRONT_DISTANCE_SENSOR_POSITION;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team4100worlds.autonomous.ScrappyAutoBase;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierLine;
@@ -12,6 +14,10 @@ import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
 import java.util.ArrayList;
 
 public class LocalizeWithStack extends CommandBase {
+    public static double DRIVE_ERROR_THRESHOLD = 4;
+    public static double STRAFE_ERROR_THRESHOLD = 4;
+    public static int STRAFE_ERROR_ATTEMPTS = 6;
+    public static int STRAFE_ERROR_ATTEMPTS_MIN = 3;
     private final ScrappyAutoBase m_base;
     private boolean m_finished = false;
 
@@ -21,35 +27,39 @@ public class LocalizeWithStack extends CommandBase {
 
     @Override
     public void initialize() {
-        Pose2d currentPose = m_base.robot.m_drive.getPose();
-        double robotHeading = currentPose.getHeading();
+        ArrayList<Double> errorList = new ArrayList<>();
 
-        ArrayList<Vector2d> errorList = new ArrayList<>();
+        int attempts = 0;
 
-        while (errorList.size() < 3) {
-            Vector2d error = m_base.stackProcessor.getDistanceError(robotHeading);
+        while (errorList.size() < STRAFE_ERROR_ATTEMPTS_MIN || attempts++ < STRAFE_ERROR_ATTEMPTS) {
+            Double error = m_base.stackProcessor.getStrafeError();
             if (error != null) {
                 errorList.add(error);
             }
         }
 
-        double errorX = 0;
-        double errorY = 0;
+        double strafeError = 0;
 
-        for (Vector2d err : errorList) {
-            errorX += err.getX();
-            errorY += err.getY();
+        for (Double err : errorList) {
+            strafeError += err;
         }
 
-        errorX /= 3;
-        errorY /= 3;
+        strafeError /= errorList.size();
 
-        Path stackPath = new Path(new BezierLine(new Point(currentPose), new Point(new Pose2d(currentPose.getX() + errorX + 12.5, currentPose.getY() + errorY + 1.5, Math.PI))));
-        stackPath.setConstantHeadingInterpolation(Math.PI);
-        stackPath.setPathEndTValue(0.9);
-        stackPath.setPathEndTimeout(1);
+        if (strafeError >= STRAFE_ERROR_THRESHOLD) {
+            strafeError = 0;
+        }
 
-        m_base.robot.m_drive.followPath(stackPath);
+        double driveError = (-71 + m_base.robot.m_sensors.getFrontDistanceAsync() + FRONT_DISTANCE_SENSOR_POSITION.getY()) - m_base.robot.m_drive.getPose().getX();
+
+        if (driveError >= DRIVE_ERROR_THRESHOLD) {
+            driveError = 0;
+        }
+
+        m_base.robot.m_drive.poseUpdater.setXOffset(driveError);
+        m_base.robot.m_drive.poseUpdater.setYOffset(strafeError);
+
+        m_finished = true;
     }
 
     @Override
@@ -58,6 +68,6 @@ public class LocalizeWithStack extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return !m_base.robot.m_drive.isBusy();
+        return m_finished;
     }
 }

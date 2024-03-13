@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.team4100worlds.autonomous;
+package org.firstinspires.ftc.team4100worlds.commands;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
+import org.firstinspires.ftc.team4100worlds.autonomous.ScrappyAutoBase;
+import org.firstinspires.ftc.team4100worlds.pedropathing.follower.Follower;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierLine;
-import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.PathChain;
+import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Path;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
 import org.firstinspires.ftc.team4100worlds.vision.AprilTagLocalization;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -14,7 +16,7 @@ import java.util.List;
 
 public class DriveToAprilTag extends CommandBase {
     private final ScrappyAutoBase m_base;
-    private Pose2d m_offset;
+    private final Pose2d m_offset;
     private Integer m_desiredId = null;
     private Boolean m_isBackCamera = null;
 
@@ -32,7 +34,7 @@ public class DriveToAprilTag extends CommandBase {
 
     @Override
     public void initialize() {
-        m_isBackCamera = m_isBackCamera == null ? true : m_isBackCamera;
+        m_isBackCamera = m_isBackCamera == null || m_isBackCamera;
 
         double robotHeading = m_base.robot.m_drive.getPose().getHeading();
 
@@ -56,19 +58,18 @@ public class DriveToAprilTag extends CommandBase {
         if (detections != 0) {
             avgX /= detections;
             avgY /= detections;
-            m_base.robot.m_drive.setPose(new Pose2d(avgX, avgY, robotHeading));
+            m_base.robot.m_drive.poseUpdater.setCurrentPoseUsingOffset(new Pose2d(avgX, avgY, robotHeading));
         }
 
         Vector2d tagPos = AprilTagLocalization.getTagPosition(m_desiredId != null ? m_desiredId : 1);
 
-        PathChain path = m_base.robot.m_drive.pathBuilder()
-                .addPath(new BezierLine(
-                        new Point(m_base.robot.m_drive.getPose()),
-                        new Point(tagPos.getX() + m_offset.getX(), tagPos.getY() + m_offset.getY(), Point.CARTESIAN)
-                ))
-                .setConstantHeadingInterpolation(Math.PI + m_offset.getHeading())
-                .build();
+        Path path = new Path(new BezierLine(
+                new Point(avgX, avgY, Point.CARTESIAN),
+                new Point(tagPos.getX() + m_offset.getX(), tagPos.getY() + m_offset.getY(), Point.CARTESIAN)
+        ));
+        path.setConstantHeadingInterpolation(Math.PI);
 
+        m_base.robot.m_drive.setMaxPower(0.5);
         m_base.robot.m_drive.followPath(path);
     }
 
@@ -78,6 +79,12 @@ public class DriveToAprilTag extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return !m_base.robot.m_drive.isBusy();
+        if (!m_base.robot.m_drive.isBusy()) {
+            m_base.robot.m_drive.setMaxPower(1);
+            m_base.robot.m_drive.poseUpdater.resetOffset();
+            return true;
+        }
+
+        return false;
     }
 }

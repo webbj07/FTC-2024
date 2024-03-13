@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
-import org.firstinspires.ftc.team4100worlds.ScrappySettings;
+import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
 import org.firstinspires.ftc.team4100worlds.interfaces.PropDetector;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
@@ -17,8 +17,8 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 public class PropDetectionProcessor implements VisionProcessor, PropDetector {
     // Alliance type and side passed to constructor
-    private final ScrappySettings.AllianceType ALLIANCE_TYPE;
-    private final ScrappySettings.AllianceSide ALLIANCE_SIDE;
+    private final ScrappyConstants.AllianceType ALLIANCE_TYPE;
+    private final ScrappyConstants.AllianceSide ALLIANCE_SIDE;
 
     // Mats
     private final Mat testMat = new Mat();
@@ -46,11 +46,11 @@ public class PropDetectionProcessor implements VisionProcessor, PropDetector {
 
     private DetectionResult detectionResult = DetectionResult.LEFT;
 
-    public PropDetectionProcessor(ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide) {
+    public PropDetectionProcessor(ScrappyConstants.AllianceType allianceType, ScrappyConstants.AllianceSide allianceSide) {
         this.ALLIANCE_TYPE = allianceType;
         this.ALLIANCE_SIDE = allianceSide;
 
-        if ((ALLIANCE_SIDE == ScrappySettings.AllianceSide.CLOSE && ALLIANCE_TYPE == ScrappySettings.AllianceType.BLUE) || (ALLIANCE_SIDE == ScrappySettings.AllianceSide.FAR && ALLIANCE_TYPE == ScrappySettings.AllianceType.RED)) {
+        if ((ALLIANCE_SIDE == ScrappyConstants.AllianceSide.CLOSE && ALLIANCE_TYPE == ScrappyConstants.AllianceType.BLUE) || (ALLIANCE_SIDE == ScrappyConstants.AllianceSide.FAR && ALLIANCE_TYPE == ScrappyConstants.AllianceType.RED)) {
             LEFT_RECTANGLE = new Rect(new Point(20, 80), new Point(150, 210));
             RIGHT_RECTANGLE = new Rect(new Point(385, 55), new Point(470, 160));
         } else {
@@ -67,7 +67,7 @@ public class PropDetectionProcessor implements VisionProcessor, PropDetector {
     public Object processFrame(Mat frame, long captureTimeNanos) {
         Imgproc.cvtColor(frame, testMat, Imgproc.COLOR_RGB2HSV);
 
-        if (this.ALLIANCE_TYPE == ScrappySettings.AllianceType.RED) {
+        if (this.ALLIANCE_TYPE == ScrappyConstants.AllianceType.RED) {
             Core.inRange(testMat, LOW_HSV_RED_LOWER, LOW_HSV_RED_UPPER, lowMat);
             Core.inRange(testMat, HIGH_HSV_RED_LOWER, HIGH_HSV_RED_UPPER, highMat);
         } else {
@@ -88,9 +88,9 @@ public class PropDetectionProcessor implements VisionProcessor, PropDetector {
         double averagedLeftBox = leftBox / LEFT_RECTANGLE.area() / 255;
         double averagedRightBox = rightBox / RIGHT_RECTANGLE.area() / 255;
 
-        double allianceBasedThreshold = ALLIANCE_TYPE == ScrappySettings.AllianceType.RED ? RED_THRESHOLD : BLUE_THRESHOLD;
+        double allianceBasedThreshold = ALLIANCE_TYPE == ScrappyConstants.AllianceType.RED ? RED_THRESHOLD : BLUE_THRESHOLD;
 
-        if ((ALLIANCE_SIDE == ScrappySettings.AllianceSide.CLOSE && ALLIANCE_TYPE == ScrappySettings.AllianceType.BLUE) || (ALLIANCE_SIDE == ScrappySettings.AllianceSide.FAR && ALLIANCE_TYPE == ScrappySettings.AllianceType.RED)) {
+        if ((ALLIANCE_SIDE == ScrappyConstants.AllianceSide.CLOSE && ALLIANCE_TYPE == ScrappyConstants.AllianceType.BLUE) || (ALLIANCE_SIDE == ScrappyConstants.AllianceSide.FAR && ALLIANCE_TYPE == ScrappyConstants.AllianceType.RED)) {
             if (averagedLeftBox > allianceBasedThreshold) {
                 detectionResult = DetectionResult.LEFT;
             } else if (averagedRightBox > allianceBasedThreshold){
@@ -107,10 +107,6 @@ public class PropDetectionProcessor implements VisionProcessor, PropDetector {
                 detectionResult = DetectionResult.LEFT;
             }
         }
-
-//        if (!ScrappySettings.IS_COMPETITION) {
-//            finalMat.copyTo(frame);
-//        }
 
         return null;
     }

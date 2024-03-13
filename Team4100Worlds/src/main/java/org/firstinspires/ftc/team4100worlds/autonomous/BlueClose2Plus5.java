@@ -5,43 +5,43 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.team4100worlds.ScrappySettings;
+import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
 import org.firstinspires.ftc.team4100worlds.commands.FollowPath;
+import org.firstinspires.ftc.team4100worlds.commands.GotoStack;
+import org.firstinspires.ftc.team4100worlds.commands.HoldPoint;
 import org.firstinspires.ftc.team4100worlds.commands.LocalizeWithStack;
+import org.firstinspires.ftc.team4100worlds.commands.ProfiledLiftCommand;
+import org.firstinspires.ftc.team4100worlds.commands.WaitForReachedTValue;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierCurve;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierLine;
+import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierPoint;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Path;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.PathChain;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
 
 @Autonomous
-public class BlueClose2Plus4 extends ScrappyAutoBase {
+public class BlueClose2Plus5 extends ScrappyAutoBase {
     public static Pose2d startingPose = new Pose2d(15.5, 61.75, Math.toRadians(270));
     private PathChain middleSpikeMark, middleBackboardTraj, middleStackTraj, middleBackboardStackTraj, middleStack2Traj, middleBackboardStack2Traj, middleStack3Traj, middleBackboardStack3Traj, middleEndTraj;
 
-    private DistanceSensor dist;
-    public BlueClose2Plus4() {
-        super(ScrappySettings.AllianceType.BLUE, ScrappySettings.AllianceSide.CLOSE, startingPose);
+    public BlueClose2Plus5() {
+        super(ScrappyConstants.AllianceType.BLUE, ScrappyConstants.AllianceSide.CLOSE, startingPose);
     }
 
     @Override
     public void initAuto() {
-        dist = hardwareMap.get(DistanceSensor.class, "FrontDistance");
-
         // Middle
         middleSpikeMark = robot.m_drive.pathBuilder()
-                .addPath(new Path(new BezierLine(new Point(startingPose), new Point(11.5, 35.5, Point.CARTESIAN))))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
+                .addPath(new Path(new BezierLine(new Point(startingPose), new Point(12, 37.5, Point.CARTESIAN))))
+                .setLinearHeadingInterpolation(startingPose.getHeading(), Math.toRadians(220))
                 .build();
 
         middleBackboardTraj = robot.m_drive.pathBuilder()
-                .addPath(new Path(new BezierLine(middleSpikeMark.getPath(0).getLastControlPoint(), new Point(52, 35, Point.CARTESIAN))))
-                .setLinearHeadingInterpolation(startingPose.getHeading(), Math.PI, 0.8)
+                .addPath(new Path(new BezierLine(middleSpikeMark.getPath(0).getLastControlPoint(), new Point(52.5, 27, Point.CARTESIAN))))
+                .setLinearHeadingInterpolation(Math.toRadians(220), Math.PI, 0.7)
                 .build();
 
         middleStackTraj = robot.m_drive.pathBuilder()
@@ -53,7 +53,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addTemporalCallback(1, () -> vision.setProcessorEnabled(stackProcessor, true))
                 .addPath(new BezierLine(
                         new Point(30, 10.5, Point.CARTESIAN),
-                        new Point(-45, 11.75, Point.CARTESIAN)
+                        new Point(-45, 11.5, Point.CARTESIAN)
                 ))
                 .setConstantHeadingInterpolation(Math.PI)
                 .build();
@@ -62,7 +62,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addPath(new BezierCurve(
                         new Point(-40, 10.5, Point.CARTESIAN),
                         new Point(37, 10.5, Point.CARTESIAN),
-                        new Point(51, 28, Point.CARTESIAN)
+                        new Point(52.2, 28, Point.CARTESIAN)
                 ))
                 .setConstantHeadingInterpolation(Math.PI)
                 .addParametricCallback(0.1, () -> {
@@ -72,8 +72,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addParametricCallback(0.5, () -> {
                     robot.m_intake.stop();
                     robot.m_conveyor.stop();
-                    robot.m_outtake.extend(-0.07);
-                    robot.m_lift.setRelativePosition(600);
+                    robot.m_outtake.extend();
                 })
                 .build();
         middleStack2Traj = robot.m_drive.pathBuilder()
@@ -85,7 +84,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addTemporalCallback(1, () -> vision.setProcessorEnabled(stackProcessor, true))
                 .addPath(new BezierLine(
                         new Point(30, 10.5, Point.CARTESIAN),
-                        new Point(-45, 11.75, Point.CARTESIAN)
+                        new Point(-45, 11.5, Point.CARTESIAN)
                 ))
                 .setConstantHeadingInterpolation(Math.PI)
                 .build();
@@ -94,7 +93,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addPath(new BezierCurve(
                         new Point(-40, 10.5, Point.CARTESIAN),
                         new Point(37, 10.5, Point.CARTESIAN),
-                        new Point(51, 28, Point.CARTESIAN)
+                        new Point(52.2, 28, Point.CARTESIAN)
                 ))
                 .setConstantHeadingInterpolation(Math.PI)
                 .addParametricCallback(0.1, () -> {
@@ -104,8 +103,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addParametricCallback(0.5, () -> {
                     robot.m_intake.stop();
                     robot.m_conveyor.stop();
-                    robot.m_outtake.extend(-0.07);
-                    robot.m_lift.setRelativePosition(900);
+                    robot.m_outtake.extend();
                 })
                 .build();
         middleStack3Traj = robot.m_drive.pathBuilder()
@@ -130,7 +128,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addPath(new BezierCurve(
                         new Point(-40, 10.5, Point.CARTESIAN),
                         new Point(37, 10.5, Point.CARTESIAN),
-                        new Point(51, 28, Point.CARTESIAN)
+                        new Point(52.2, 28, Point.CARTESIAN)
                 ))
                 .setConstantHeadingInterpolation(Math.PI)
                 .addParametricCallback(0.1, () -> {
@@ -140,8 +138,7 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                 .addParametricCallback(0.5, () -> {
                     robot.m_intake.stop();
                     robot.m_conveyor.stop();
-                    robot.m_outtake.extend(-0.07);
-                    robot.m_lift.setRelativePosition(900);
+                    robot.m_outtake.extend();
                 })
                 .build();
         middleEndTraj = robot.m_drive.pathBuilder()
@@ -159,32 +156,31 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                         new FollowPath(robot.m_drive, middleSpikeMark),
                         new InstantCommand(() -> {
                             robot.m_intake.back();
-                            robot.m_intake.raise();
-                            robot.m_outtake.extend(-0.07);
-                            robot.m_lift.setRelativePosition(420);
+                            robot.m_outtake.extend();
                         }),
-                        new FollowPath(robot.m_drive, middleBackboardTraj),
                         new WaitCommand(200),
+                        new InstantCommand(robot.m_intake::raise),
+                        new FollowPath(robot.m_drive, middleBackboardTraj).alongWith(new ProfiledLiftCommand(robot.m_lift, 430)),
+                        new HoldPoint(robot.m_drive, new BezierPoint(middleBackboardTraj.getPath(0).getLastControlPoint()), Math.PI),
+                        new WaitCommand(400),
                         new InstantCommand(robot.m_outtake::drop),
-                        new WaitCommand(300),
+                        new WaitCommand(500),
+
                         new FollowPath(robot.m_drive, middleStackTraj).alongWith(
                                 new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new InstantCommand(robot.m_lift::toInitial),
+                                        new WaitCommand(200),
+                                        new WaitForReachedTValue(robot.m_drive, 0.05),
                                         new InstantCommand(robot.m_outtake::back),
-                                        new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(0)),
+                                        new ProfiledLiftCommand(robot.m_lift, 0),
                                         new InstantCommand(robot.m_outtake::lower)
                                 )
                         ),
-                        new InstantCommand(robot.m_intake::lower),
-                        new InstantCommand(() -> {
-                            telemetry.addData("d", dist.getDistance(DistanceUnit.INCH));
-                            telemetry.update();
-                        }),
                         new LocalizeWithStack(this),
-                        new InstantCommand(() -> {
-                            vision.setProcessorEnabled(stackProcessor, false);
-                        }),
+                        new InstantCommand(() -> vision.setProcessorEnabled(stackProcessor, false)),
+                        new HoldPoint(robot.m_drive, new BezierPoint(middleStackTraj.getPath(1).getLastControlPoint()), Math.PI),
+                        new InstantCommand(robot.m_intake::lower),
+                        new WaitCommand(300),
+                        new GotoStack(this),
                         new InstantCommand(() -> {
                             robot.m_intake.suck();
                             robot.m_conveyor.up();
@@ -197,29 +193,35 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                                 new InstantCommand(() -> robot.m_intake.backTwo()),
                                 new WaitCommand(400),
                                 new InstantCommand(() -> robot.m_intake.grab()),
-                                new WaitCommand(700)
+                                new WaitCommand(250)
                         ),
-                        new FollowPath(robot.m_drive, middleBackboardStackTraj),
+                        new FollowPath(robot.m_drive, middleBackboardStackTraj).alongWith(
+                                new SequentialCommandGroup(
+                                        new WaitCommand(300),
+                                        new WaitForReachedTValue(robot.m_drive, 0.5),
+                                        new ProfiledLiftCommand(robot.m_lift, 900)
+                                )
+                        ),
                         new WaitCommand(200),
-                        new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(600)),
                         new InstantCommand(robot.m_outtake::drop),
-                        new WaitCommand(300),
+                        new WaitCommand(500),
 
                         new FollowPath(robot.m_drive, middleStack2Traj).alongWith(
                                 new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new InstantCommand(robot.m_lift::toInitial),
-                                        new InstantCommand(robot.m_outtake::back),
                                         new InstantCommand(() -> vision.setProcessorEnabled(stackProcessor, true)),
-                                        new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(0)),
+                                        new WaitCommand(200),
+                                        new WaitForReachedTValue(robot.m_drive, 0.05),
+                                        new InstantCommand(robot.m_outtake::back),
+                                        new ProfiledLiftCommand(robot.m_lift, 0),
                                         new InstantCommand(robot.m_outtake::lower)
                                 )
                         ),
-                        new InstantCommand(robot.m_intake::lower),
                         new LocalizeWithStack(this),
-                        new InstantCommand(() -> {
-                            vision.setProcessorEnabled(stackProcessor, false);
-                        }),
+                        new InstantCommand(() -> vision.setProcessorEnabled(stackProcessor, false)),
+                        new HoldPoint(robot.m_drive, new BezierPoint(middleStackTraj.getPath(1).getLastControlPoint()), Math.PI),
+                        new InstantCommand(robot.m_intake::lower),
+                        new WaitCommand(300),
+                        new GotoStack(this),
                         new InstantCommand(() -> {
                             robot.m_intake.suck();
                             robot.m_conveyor.up();
@@ -232,39 +234,53 @@ public class BlueClose2Plus4 extends ScrappyAutoBase {
                                 new InstantCommand(() -> robot.m_intake.backTwo()),
                                 new WaitCommand(400),
                                 new InstantCommand(() -> robot.m_intake.grab()),
-                                new WaitCommand(700)
+                                new WaitCommand(250)
                         ),
-                        new FollowPath(robot.m_drive, middleBackboardStack2Traj),
+                        new FollowPath(robot.m_drive, middleBackboardStack2Traj).alongWith(
+                                new SequentialCommandGroup(
+                                        new WaitCommand(300),
+                                        new WaitForReachedTValue(robot.m_drive, 0.5),
+                                        new ProfiledLiftCommand(robot.m_lift, 900)
+                                )
+                        ),
                         new WaitCommand(200),
-                        new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(900)),
                         new InstantCommand(robot.m_outtake::drop),
-                        new WaitCommand(300),
+                        new WaitCommand(500),
 
                         new FollowPath(robot.m_drive, middleStack3Traj).alongWith(
                                 new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new InstantCommand(robot.m_lift::toInitial),
+                                        new WaitCommand(200),
+                                        new WaitForReachedTValue(robot.m_drive, 0.05),
                                         new InstantCommand(robot.m_outtake::back),
-                                        new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(0)),
+                                        new ProfiledLiftCommand(robot.m_lift, 0),
                                         new InstantCommand(robot.m_outtake::lower)
                                 )
+                        ).alongWith(
+                                new SequentialCommandGroup(
+                                        new WaitCommand(200),
+                                        new WaitForReachedTValue(robot.m_drive, 0.7),
+                                        new InstantCommand(robot.m_intake::suck),
+                                        new InstantCommand(robot.m_conveyor::up)
+                                )
                         ),
-                        new InstantCommand(() -> {
-                            robot.m_intake.suck();
-                            robot.m_conveyor.up();
-                        }),
-                        new WaitCommand(700),
-                        new FollowPath(robot.m_drive, middleBackboardStack3Traj),
+                        new WaitCommand(400),
+                        new FollowPath(robot.m_drive, middleBackboardStack3Traj).alongWith(
+                                new SequentialCommandGroup(
+                                        new WaitCommand(300),
+                                        new WaitForReachedTValue(robot.m_drive, 0.5),
+                                        new ProfiledLiftCommand(robot.m_lift, 1000)
+                                )
+                        ),
                         new WaitCommand(200),
-                        new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(900)),
                         new InstantCommand(robot.m_outtake::drop),
-                        new WaitCommand(300),
+                        new WaitCommand(500),
 
                         new FollowPath(robot.m_drive, middleEndTraj).alongWith(
                                 new SequentialCommandGroup(
-                                        new WaitCommand(400),
-                                        new InstantCommand(robot.m_lift::toInitial),
-                                        new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(0)),
+                                        new WaitCommand(100),
+                                        new InstantCommand(robot.m_outtake::back),
+                                        new WaitForReachedTValue(robot.m_drive, 0.2),
+                                        new ProfiledLiftCommand(robot.m_lift, 0),
                                         new InstantCommand(robot.m_outtake::lower)
                                 )
                         )

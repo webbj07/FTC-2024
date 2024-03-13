@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.util.PoseStorage;
 import org.firstinspires.ftc.teamcode.ScrappyCore;
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.commands.InitPositions;
 import org.firstinspires.ftc.teamcode.interfaces.PropDetector;
 import org.firstinspires.ftc.teamcode.vision.AprilTagLocalization;
@@ -25,8 +25,8 @@ import java.util.ArrayList;
 
 @Config
 public abstract class ScrappyAutoBase extends CommandOpMode {
-    protected final ScrappySettings.AllianceType m_allianceType;
-    protected final ScrappySettings.AllianceSide m_allianceSide;
+    protected final ScrappyConstants.AllianceType m_allianceType;
+    protected final ScrappyConstants.AllianceSide m_allianceSide;
     protected final Pose2d m_startingPose;
     public PropDetector.DetectionResult detectionResult = PropDetector.DetectionResult.LEFT;
     public ScrappyCore robot;
@@ -37,7 +37,7 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
     public StackProcessor stackProcessor;
     public VisionPortal vision;
 
-    public ScrappyAutoBase(ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide, Pose2d startPose) {
+    public ScrappyAutoBase(ScrappyConstants.AllianceType allianceType, ScrappyConstants.AllianceSide allianceSide, Pose2d startPose) {
         m_allianceType = allianceType;
         m_allianceSide = allianceSide;
         m_startingPose = startPose;

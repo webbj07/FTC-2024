@@ -10,10 +10,11 @@ import org.firstinspires.ftc.team4100worlds.subsystem.Intake;
 import org.firstinspires.ftc.team4100worlds.subsystem.Lift;
 import org.firstinspires.ftc.team4100worlds.subsystem.Outtake;
 import org.firstinspires.ftc.team4100worlds.subsystem.Plane;
+import org.firstinspires.ftc.team4100worlds.subsystem.Sensors;
 
 public class ScrappyCore extends Robot {
-    public final ScrappySettings.AllianceType ALLIANCE_TYPE;
-    public final ScrappySettings.AllianceSide ALLIANCE_SIDE;
+    public final ScrappyConstants.AllianceType ALLIANCE_TYPE;
+    public final ScrappyConstants.AllianceSide ALLIANCE_SIDE;
 
     // Subsystems
     public Follower m_drive;
@@ -22,8 +23,9 @@ public class ScrappyCore extends Robot {
     public Conveyor m_conveyor;
     public Outtake m_outtake;
     public Plane m_plane;
+    public Sensors m_sensors;
 
-    public ScrappyCore(HardwareMap hardwareMap, ScrappySettings.AllianceType allianceType, ScrappySettings.AllianceSide allianceSide) {
+    public ScrappyCore(HardwareMap hardwareMap, ScrappyConstants.AllianceType allianceType, ScrappyConstants.AllianceSide allianceSide) {
         ALLIANCE_TYPE = allianceType;
         ALLIANCE_SIDE = allianceSide;
 
@@ -37,5 +39,6 @@ public class ScrappyCore extends Robot {
         m_conveyor = new Conveyor(hardwareMap);
         m_outtake = new Outtake(hardwareMap);
         m_plane = new Plane(hardwareMap);
+        m_sensors = new Sensors(hardwareMap);
     }
 }

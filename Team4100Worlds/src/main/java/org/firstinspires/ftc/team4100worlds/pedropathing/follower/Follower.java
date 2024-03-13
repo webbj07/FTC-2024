@@ -25,6 +25,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.team4100worlds.FollowerConstants;
 import org.firstinspires.ftc.team4100worlds.pedropathing.localization.PoseUpdater;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierPoint;
@@ -47,7 +49,7 @@ public class Follower {
 
     private HardwareMap hardwareMap;
 
-    private DcMotorEx leftFront, leftRear, rightFront, rightRear;
+    public DcMotorEx leftFront, leftRear, rightFront, rightRear;
     private List<DcMotorEx> motors;
 
     private DriveVectorScaler driveVectorScaler;
@@ -73,6 +75,9 @@ public class Follower {
     private long reachedParametricPathEndTime;
 
     private double[] drivePowers;
+    private int collisionCounts = 0;
+    private boolean isCollision = false;
+    private boolean isFirstCollision = false;
 
     private Vector[] teleOpMovementVectors = new Vector[] {new Vector(0,0), new Vector(0,0), new Vector(0,0)};
 
@@ -95,7 +100,7 @@ public class Follower {
 
     public static boolean useTranslational = true, useCentripetal = true, useHeading = true, useDrive = true;
 
-    public static double holdPointTranslationalScaling = 0.45, holdPointHeadingScaling = 0.35;
+    public static double holdPointTranslationalScaling = 0.8, holdPointHeadingScaling = 0.8;
 
     /**
      * This creates a new follower given a hardware map
@@ -144,7 +149,7 @@ public class Follower {
         }
 
         for (DcMotorEx motor : motors) {
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
         for (int i = 0; i < DELTA_POSE_RECORD_LIMIT; i++) {
@@ -280,7 +285,29 @@ public class Follower {
                 }
             } else {
                 if (isBusy) {
-                    closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), BEZIER_CURVE_BINARY_STEP_LIMIT);
+                    if (isCollision) {
+//                        Point closestPoint = currentPath.getPoint(currentPath.getClosestPointTValue() - 0.5);
+//                        closestPose = new Pose2d(closestPoint.getX(), closestPoint.getY(), currentPath.getClosestPointHeadingGoal());
+
+                        if (isFirstCollision) {
+//                            closestPose = currentPath.getPoint(currentPath.getClosestPointTValue() - 0.25);
+                            isFirstCollision = false;
+                        }
+
+                        if (MathFunctions.distance(closestPose, poseUpdater.getPose()) < 3) {
+                            isCollision = false;
+                        }
+//                    } else if (getVelocityMagnitude() < 1.5 && !currentPath.isAtParametricEnd()) {
+//                        collisionCounts++;
+//
+//                        if (collisionCounts > 2) {
+//                            isCollision = true;
+//                            isFirstCollision = true;
+//                        }
+                    } else {
+                        collisionCounts = 0;
+                        closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), BEZIER_CURVE_BINARY_STEP_LIMIT);
+                    }
 
                     if (followingPathChain) updateCallbacks();
 
@@ -342,7 +369,6 @@ public class Follower {
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         double robotLength = 19.5;
-        double robotWidth = 15.15;
 
         TelemetryPacket packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
@@ -359,7 +385,7 @@ public class Follower {
             // Draw robot (target pose)
             fieldOverlay.setStroke("#4CAF50");
             Point lastControlPoint = currentPath.getLastControlPoint();
-            drawRobot(fieldOverlay, new Pose2d(lastControlPoint.getX(), lastControlPoint.getY(), lastControlPoint.getTheta()), robotLength / 2);
+            drawRobot(fieldOverlay, new Pose2d(lastControlPoint.getX(), lastControlPoint.getY(), currentPath.getPathEndHeading()), robotLength / 2);
 
             // Draw path
             drawPath(fieldOverlay, currentPath, 2.0);
@@ -464,6 +490,13 @@ public class Follower {
         teleOpMovementVectors = new Vector[] {correctional, heading, drive};
     }
 
+    public void setMovementPowers(double lfPower, double lrPower, double rfPower, double rrPower) {
+        leftFront.setPower(lfPower);
+        leftRear.setPower(lrPower);
+        rightFront.setPower(rfPower);
+        rightRear.setPower(rrPower);
+    }
+
     /**
      * This returns a Vector in the direction the robot must go to move along the path
      *
@@ -541,6 +574,12 @@ public class Follower {
         }
         largeHeadingPIDF.updateError(headingError);
         return new Vector(MathFunctions.clamp(largeHeadingPIDF.runPIDF() + largeHeadingPIDFFeedForward * MathFunctions.getTurnDirection(poseUpdater.getPose().getHeading(), currentPath.getClosestPointHeadingGoal()), -1, 1), poseUpdater.getPose().getHeading());
+    }
+
+    public Vector getHeadingVectorAprilTag(double angle) {
+        double headingError = MathFunctions.getTurnDirection(poseUpdater.getPose().getHeading(), angle) * MathFunctions.getSmallestAngleDifference(poseUpdater.getPose().getHeading(), angle);
+        smallHeadingPIDF.updateError(headingError);
+        return new Vector(MathFunctions.clamp(smallHeadingPIDF.runPIDF() + smallHeadingPIDFFeedForward * MathFunctions.getTurnDirection(poseUpdater.getPose().getHeading(), headingError + poseUpdater.getPose().getHeading()), -1, 1), poseUpdater.getPose().getHeading());
     }
 
     /**
@@ -724,10 +763,9 @@ public class Follower {
         int samples = (int) Math.ceil(path.length() / resolution);
         double[] xPoints = new double[samples];
         double[] yPoints = new double[samples];
-        double dx = path.length() / (samples - 1);
         for (int i = 0; i < samples; i++) {
-            double displacement = i * dx;
-            Point pose = path.getPoint(displacement);
+            double t = i / (double) (samples - 1);
+            Point pose = path.getPoint(t);
             xPoints[i] = pose.getX();
             yPoints[i] = pose.getY();
         }

@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.team4100worlds.pedropathing.localization;
 
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.team4100worlds.ScrappySettings;
+import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Vector;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.MathFunctions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PoseUpdater {
     private HardwareMap hardwareMap;
@@ -33,12 +35,11 @@ public class PoseUpdater {
     public PoseUpdater(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         this.imu = hardwareMap.get(IMU.class, "imu");
-        this.imu.initialize(new IMU.Parameters(ScrappySettings.CONTROL_HUB_ORIENTATION));
+        this.imu.initialize(new IMU.Parameters(ScrappyConstants.CONTROL_HUB_ORIENTATION));
         this.imu.resetYaw();
 
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+        List<Integer> lastTrackingEncPositions = new ArrayList<>();
+        List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         localizer = new TwoWheelTrackingLocalizer(hardwareMap, imu);
     }
@@ -64,6 +65,19 @@ public class PoseUpdater {
         previousPoseTime = System.nanoTime();
         currentPoseTime = System.nanoTime();
         localizer.setPoseEstimate(set);
+    }
+
+    /**
+     *
+     * This resets the current pose to a specified pose, using offsets to avoid having to reset using roadrunners pose reset
+     *
+     * @param set this is the pose we want to set the current pose to, using offsets
+     */
+    public void setCurrentPoseUsingOffset(Pose2d set) {
+        Pose2d currentPose = localizer.getPoseEstimate();
+        setXOffset(set.getX() - currentPose.getX());
+        setYOffset(set.getY() - currentPose.getY());
+        setHeadingOffset(MathFunctions.getTurnDirection(currentPose.getHeading(), set.getHeading()) * MathFunctions.getSmallestAngleDifference(currentPose.getHeading(), set.getHeading()));
     }
 
     public void setXOffset(double offset) {

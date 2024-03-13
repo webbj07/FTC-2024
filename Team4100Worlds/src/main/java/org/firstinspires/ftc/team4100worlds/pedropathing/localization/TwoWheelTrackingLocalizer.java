@@ -52,6 +52,9 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     // Perpendicular is perpendicular to the forward axis
     private Encoder parallelEncoder, perpendicularEncoder;
 
+    public static double X_MULTIPLIER = 1;
+    public static double Y_MULTIPLIER = 0.993523865081282;
+
     public TwoWheelTrackingLocalizer(HardwareMap hardwareMap, IMU imu) {
         super(Arrays.asList(
             new Pose2d(PARALLEL_X, PARALLEL_Y, 0),
@@ -84,8 +87,8 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     @Override
     public List<Double> getWheelPositions() {
         return Arrays.asList(
-                encoderTicksToInches(parallelEncoder.getCurrentPosition()),
-                encoderTicksToInches(perpendicularEncoder.getCurrentPosition())
+                encoderTicksToInches(parallelEncoder.getCurrentPosition()) * X_MULTIPLIER,
+                encoderTicksToInches(perpendicularEncoder.getCurrentPosition()) * Y_MULTIPLIER
         );
     }
 
@@ -97,8 +100,8 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
         //  compensation method
 
         return Arrays.asList(
-                encoderTicksToInches(parallelEncoder.getRawVelocity()),
-                encoderTicksToInches(perpendicularEncoder.getRawVelocity())
+                encoderTicksToInches(parallelEncoder.getRawVelocity()) * X_MULTIPLIER,
+                encoderTicksToInches(perpendicularEncoder.getRawVelocity()) * Y_MULTIPLIER
         );
     }
 }

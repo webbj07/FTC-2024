@@ -35,6 +35,14 @@ public class Intake extends SubsystemBase {
         this.stop();
     }
 
+    public void setExtendRelPos(double pos) {
+        m_intakeEx.setPosition(m_intakeEx.getPosition() + pos);
+    }
+
+    public double getExtendPos() {
+        return m_intakeEx.getPosition();
+    }
+
     public void raise() {
         m_intakeEx.setPosition(EXTEND_UP_POS);
     }

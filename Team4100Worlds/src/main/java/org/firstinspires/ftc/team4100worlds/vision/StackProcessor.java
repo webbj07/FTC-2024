@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.team4100worlds.vision;
 
-import static org.firstinspires.ftc.team4100worlds.ScrappySettings.FRONT_CAMERA_OFFSET_Y;
-
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -65,6 +61,8 @@ public class StackProcessor implements VisionProcessor {
             if (boundingRect.width < 75) {
                 continue;
             }
+            if (boundingRect.y < 80) continue;
+            if (boundingRect.x > 300) continue;
             for (int y = boundingRect.y + boundingRect.height / 2; y < boundingRect.y + boundingRect.height; y++) {
                 int count = 0;
                 int black = 0;
@@ -119,21 +117,32 @@ public class StackProcessor implements VisionProcessor {
         }
     }
 
-    public Vector2d getDistanceError(double robotHeading) {
+    public Double getStrafeError() {
         if (stackRect == null) {
             return null;
         }
 
-        double rotatedHeading = -robotHeading;
-
         double dZ = (STACK_WIDTH * FOCAL_LENGTH) / stackRect.width;
-        double dX = Math.cos(robotHeading) * dZ - FRONT_CAMERA_OFFSET_Y;
-//        double dY = Math.sin(robotHeading) * dZ - FRONT_CAMERA_OFFSET_X;
-        double dY = (dZ / FOCAL_LENGTH) * (stackRect.x - 320);
+        double dY = (dZ / FOCAL_LENGTH) * (stackRect.x - 308);
 
-//        double rotatedX = dX * Math.cos(rotatedHeading) + dY * Math.sin(rotatedHeading);
-//        double rotatedY = dX * -Math.sin(rotatedHeading) + dY * Math.cos(rotatedHeading);
-
-        return new Vector2d(dX, dY);
+        return dY;
     }
+
+//    public Vector2d getDistanceError(double robotHeading) {
+//        if (stackRect == null) {
+//            return null;
+//        }
+//
+//        double rotatedHeading = -robotHeading;
+//
+//        double dZ = (STACK_WIDTH * FOCAL_LENGTH) / stackRect.width;
+//        double dX = Math.cos(robotHeading) * dZ - FRONT_CAMERA_OFFSET_Y;
+////        double dY = Math.sin(robotHeading) * dZ - FRONT_CAMERA_OFFSET_X;
+//        double dY = (dZ / FOCAL_LENGTH) * (stackRect.x - 320);
+//
+////        double rotatedX = dX * Math.cos(rotatedHeading) + dY * Math.sin(rotatedHeading);
+////        double rotatedY = dX * -Math.sin(rotatedHeading) + dY * Math.cos(rotatedHeading);
+//
+//        return new Vector2d(dX, dY);
+//    }
 }

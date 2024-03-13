@@ -4,13 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
-import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.team4100worlds.ScrappySettings;
+import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
 
 public final class TestOpModes {
     public static final String GROUP = "testing";
-    public static final boolean DISABLED = ScrappySettings.IS_COMPETITION;
+    public static final boolean DISABLED = ScrappyConstants.IS_COMPETITION;
 
     private TestOpModes() {}
 

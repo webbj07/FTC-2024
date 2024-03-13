@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.vision;
 
-import static org.firstinspires.ftc.teamcode.ScrappySettings.FRONT_CAMERA_OFFSET_Y;
+import static org.firstinspires.ftc.teamcode.ScrappyConstants.FRONT_CAMERA_OFFSET_Y;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

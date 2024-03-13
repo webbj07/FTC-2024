@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import static org.firstinspires.ftc.teamcode.ScrappySettings.DISTANCE_SENSOR_WIDTH;
+import static org.firstinspires.ftc.teamcode.ScrappyConstants.DISTANCE_SENSOR_WIDTH;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DistanceSensor;

@@ -11,7 +11,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.autonomous.ScrappyAutoBase;
 import org.firstinspires.ftc.teamcode.commands.LocalizeWithAprilTag;
 import org.firstinspires.ftc.teamcode.commands.RunAction;
@@ -21,7 +21,7 @@ public class BlueFar2Plus1Truss extends ScrappyAutoBase {
     public static Pose2d startingPose = new Pose2d(-39, 61.75, Math.toRadians(270));
     private Action leftStackTraj, middleStackTraj, rightStackTraj, gotoStackTraj;
     public BlueFar2Plus1Truss() {
-        super(ScrappySettings.AllianceType.BLUE, ScrappySettings.AllianceSide.FAR, startingPose);
+        super(ScrappyConstants.AllianceType.BLUE, ScrappyConstants.AllianceSide.FAR, startingPose);
     }
 
     @Override

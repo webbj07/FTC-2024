@@ -1,71 +1,66 @@
 package org.firstinspires.ftc.team4100worlds.subsystem;
 
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.EXTENSION_MIN;
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.EXTENSION_MAX;
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.DROPPER_IN;
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.DROPPER_OUT;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Outtake extends SubsystemBase {
-    public final static double DROP_POS = 0.82;
-    public final static double BACK_POS = 0.68;
-    public final static double EXTEND_LOW = 0.96;
-    public final static double EXTEND_HIGH = 0.51;
-    private final Servo m_dropper, m_leftExtend, m_rightExtend;
+    private final Servo m_dropper, m_leftExtend;
 
     public Outtake(final HardwareMap hwMap) {
         m_dropper = hwMap.get(Servo.class, "Dropper");
         m_leftExtend = hwMap.get(Servo.class, "ExtendL");
-        m_rightExtend = hwMap.get(Servo.class, "ExtendR");
 
-//        m_rightExtend.setDirection(Servo.Direction.REVERSE);
+        m_leftExtend.setPosition(EXTENSION_MIN);
+    }
 
-        m_leftExtend.setPosition(EXTEND_LOW);
-//        m_rightExtend.setPosition(EXTEND_LOW);
+    public double getExPos() {
+        return m_leftExtend.getPosition();
     }
 
     public void extend() {
-        m_leftExtend.setPosition(EXTEND_HIGH);
-//        m_rightExtend.setPosition(EXTEND_HIGH);
+        m_leftExtend.setPosition(EXTENSION_MAX);
     }
 
     public void extend(double pos) {
-        m_leftExtend.setPosition(EXTEND_HIGH + pos + 0.14);
-//        m_rightExtend.setPosition(EXTEND_HIGH + pos);
+        m_leftExtend.setPosition(EXTENSION_MAX + pos);
     }
 
     public void lower() {
-        m_leftExtend.setPosition(EXTEND_LOW);
-//        m_rightExtend.setPosition(EXTEND_LOW);
+        m_leftExtend.setPosition(EXTENSION_MIN);
     }
 
     public void lower(double pos) {
-        m_leftExtend.setPosition(EXTEND_LOW + pos);
-//        m_rightExtend.setPosition(EXTEND_LOW);
+        m_leftExtend.setPosition(EXTENSION_MIN + pos);
     }
 
     public void setRelExtendPos(double pos) {
         m_leftExtend.setPosition(pos + m_leftExtend.getPosition());
-//        m_rightExtend.setPosition(pos + m_rightExtend.getPosition());
     }
 
     public void setExtendPos(double pos) {
         m_leftExtend.setPosition(pos);
-//        m_rightExtend.setPosition(pos);
     }
 
     public void drop() {
-        m_dropper.setPosition(DROP_POS);
+        m_dropper.setPosition(DROPPER_OUT);
     }
 
     public void drop(double pos) {
-        m_dropper.setPosition(DROP_POS + pos);
+        m_dropper.setPosition(DROPPER_OUT + pos);
     }
 
     public void back() {
-        m_dropper.setPosition(BACK_POS);
+        m_dropper.setPosition(DROPPER_IN);
     }
 
     public void back(double pos) {
-        m_dropper.setPosition(BACK_POS + pos);
+        m_dropper.setPosition(DROPPER_IN + pos);
     }
 
     public void setDropperPos(double pos) {

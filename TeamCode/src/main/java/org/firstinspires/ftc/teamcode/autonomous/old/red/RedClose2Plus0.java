@@ -7,9 +7,8 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.ScrappySettings;
+import org.firstinspires.ftc.teamcode.ScrappyConstants;
 import org.firstinspires.ftc.teamcode.autonomous.ScrappyAutoBase;
 import org.firstinspires.ftc.teamcode.commands.RunAction;
 
@@ -19,7 +18,7 @@ public class RedClose2Plus0 extends ScrappyAutoBase {
             leftEndTraj, middleEndTraj, rightEndTraj;
 
     public RedClose2Plus0() {
-        super(ScrappySettings.AllianceType.RED, ScrappySettings.AllianceSide.CLOSE, new Pose2d(15.5, -61.75, Math.toRadians(90)));
+        super(ScrappyConstants.AllianceType.RED, ScrappyConstants.AllianceSide.CLOSE, new Pose2d(15.5, -61.75, Math.toRadians(90)));
     }
     @Override
     public void initAuto() {

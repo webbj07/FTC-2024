@@ -10,10 +10,10 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Intake extends SubsystemBase {
-    public static double EXTEND_UP_POS = 0.13;
-    public static double EXTEND_DOWN_POS = 0.44;
-    public static double GRABBER_ONE_IDLE_POS = 0.3;
-    public static double GRABBER_TWO_IDLE_POS = 0.48;
+    public static double EXTEND_UP_POS = 0.59;
+    public static double EXTEND_DOWN_POS = 0.22;
+    public static double GRABBER_ONE_IDLE_POS = 0.2;
+    public static double GRABBER_TWO_IDLE_POS = 0.55;
     public static double GRABBER_ONE_GRAB_POS = 0.6;
     public static double GRABBER_TWO_GRAB_POS = 0.13;
     private final DcMotorEx m_intake;
@@ -32,6 +32,14 @@ public class Intake extends SubsystemBase {
         this.raise();
         this.grab();
         this.stop();
+    }
+
+    public void setExRelPos(double pos) {
+        m_intakeEx.setPosition(m_intakeEx.getPosition() + pos);
+    }
+
+    public double getExPos() {
+        return m_intakeEx.getPosition();
     }
 
     public void raise() {
