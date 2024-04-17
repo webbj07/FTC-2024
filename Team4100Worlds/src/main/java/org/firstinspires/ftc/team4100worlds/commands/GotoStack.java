@@ -9,10 +9,9 @@ import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierLi
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Path;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
 
-import java.util.ArrayList;
-
 public class GotoStack extends CommandBase {
     private final ScrappyAutoBase m_base;
+    private final ElapsedTime m_elapsedTime = new ElapsedTime();
 
     public GotoStack(ScrappyAutoBase base) {
         m_base = base;
@@ -25,8 +24,9 @@ public class GotoStack extends CommandBase {
         stackPath.setPathEndTValue(0.9);
         stackPath.setPathEndTimeout(1);
 
-        m_base.robot.m_drive.setMaxPower(0.5);
+        m_base.robot.m_drive.setMaxPower(0.35);
         m_base.robot.m_drive.followPath(stackPath);
+        m_elapsedTime.reset();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class GotoStack extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (!m_base.robot.m_drive.isBusy()) {
+        if (!m_base.robot.m_drive.isBusy() || m_elapsedTime.seconds() > 2.1) {
             m_base.robot.m_drive.setMaxPower(1);
             m_base.robot.m_drive.poseUpdater.resetOffset();
             return true;

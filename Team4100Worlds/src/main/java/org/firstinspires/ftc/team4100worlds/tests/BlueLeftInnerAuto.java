@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team4100worlds.tests;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import org.firstinspires.ftc.team4100worlds.pedropathing.follower.Follower;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierCurve;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierLine;
@@ -10,8 +11,8 @@ import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Path;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
 
 public class BlueLeftInnerAuto extends OpMode {
-    private Pose2d spikeMarkGoalPose, initialBackdropGoalPose;
     private final Pose2d startPose = new Pose2d(15.5, 61.75, Math.toRadians(270));
+    private Pose2d spikeMarkGoalPose, initialBackdropGoalPose;
     private Follower follower;
     private Path scoreSpikeMark, initialScoreOnBackdrop;
     private Point backdropGoalPoint;

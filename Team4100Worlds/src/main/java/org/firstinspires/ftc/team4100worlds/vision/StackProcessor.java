@@ -20,11 +20,11 @@ import java.util.ArrayList;
 public class StackProcessor implements VisionProcessor {
     public static final double STACK_WIDTH = 3.25;
     public static final double FOCAL_LENGTH = 821.993; // 640x480
-    public double CAMERA_HEIGHT = 0;
-    public double CAMERA_WIDTH = 0;
     private final Paint borderPaint = new Paint();
     private final Paint textPaint = new Paint();
-    private Mat processingMat = new Mat();
+    private final Mat processingMat = new Mat();
+    public double CAMERA_HEIGHT = 0;
+    public double CAMERA_WIDTH = 0;
     private Rect stackRect = null;
     private Rect tapeRect = null;
 
@@ -75,19 +75,19 @@ public class StackProcessor implements VisionProcessor {
                     count++;
                 }
 
-                if ((double)black/count > 0.6) {
+                if ((double) black / count > 0.6) {
                     stackRect = new Rect(
-                            boundingRect.x,
-                            y,
-                            boundingRect.width,
-                            boundingRect.y + boundingRect.height - y
+                        boundingRect.x,
+                        y,
+                        boundingRect.width,
+                        boundingRect.y + boundingRect.height - y
                     );
 
                     tapeRect = new Rect(
-                            boundingRect.x,
-                            boundingRect.y,
-                            boundingRect.width,
-                            y - boundingRect.y
+                        boundingRect.x,
+                        boundingRect.y,
+                        boundingRect.width,
+                        y - boundingRect.y
                     );
                     break;
                 } else if (stackRect != null || tapeRect != null) {

@@ -30,9 +30,7 @@
 package org.firstinspires.ftc.team4100worlds.tests;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
@@ -49,7 +47,6 @@ import java.util.concurrent.TimeUnit;
  *
  * Displays the first pattern upon init.
  */
-@TeleOp(name="BlinkinExample")
 public class SampleRevBlinkinLedDriver extends OpMode {
 
     /*
@@ -71,14 +68,8 @@ public class SampleRevBlinkinLedDriver extends OpMode {
     Deadline ledCycleDeadline;
     Deadline gamepadRateLimit;
 
-    protected enum DisplayKind {
-        MANUAL,
-        AUTO
-    }
-
     @Override
-    public void init()
-    {
+    public void init() {
         displayKind = DisplayKind.AUTO;
 
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
@@ -93,8 +84,7 @@ public class SampleRevBlinkinLedDriver extends OpMode {
     }
 
     @Override
-    public void loop()
-    {
+    public void loop() {
         handleGamepad();
 
         if (displayKind == DisplayKind.AUTO) {
@@ -117,8 +107,7 @@ public class SampleRevBlinkinLedDriver extends OpMode {
      * A: Manual mode, Right bumper displays the next pattern, left bumper displays the previous pattern.
      * B: Auto mode, pattern cycles, changing every LED_PERIOD seconds.
      */
-    protected void handleGamepad()
-    {
+    protected void handleGamepad() {
         if (!gamepadRateLimit.hasExpired()) {
             return;
         }
@@ -140,14 +129,12 @@ public class SampleRevBlinkinLedDriver extends OpMode {
         }
     }
 
-    protected void setDisplayKind(DisplayKind displayKind)
-    {
+    protected void setDisplayKind(DisplayKind displayKind) {
         this.displayKind = displayKind;
         display.setValue(displayKind.toString());
     }
 
-    protected void doAutoDisplay()
-    {
+    protected void doAutoDisplay() {
         if (ledCycleDeadline.hasExpired()) {
             pattern = pattern.next();
             displayPattern();
@@ -155,9 +142,13 @@ public class SampleRevBlinkinLedDriver extends OpMode {
         }
     }
 
-    protected void displayPattern()
-    {
+    protected void displayPattern() {
         blinkinLedDriver.setPattern(pattern);
         patternName.setValue(pattern.toString());
+    }
+
+    protected enum DisplayKind {
+        MANUAL,
+        AUTO
     }
 }

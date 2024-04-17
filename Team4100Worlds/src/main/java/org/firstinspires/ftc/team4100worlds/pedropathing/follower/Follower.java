@@ -25,8 +25,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.team4100worlds.FollowerConstants;
 import org.firstinspires.ftc.team4100worlds.pedropathing.localization.PoseUpdater;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierPoint;
@@ -46,61 +44,40 @@ import java.util.List;
 @Config
 public class Follower {
     public static int POSE_HISTORY_LIMIT = 100;
-
-    private HardwareMap hardwareMap;
-
-    public DcMotorEx leftFront, leftRear, rightFront, rightRear;
-    private List<DcMotorEx> motors;
-
-    private DriveVectorScaler driveVectorScaler;
-
-    public PoseUpdater poseUpdater;
-
-    private Pose2d closestPose;
-
-    private Path currentPath;
-
-    private PathChain currentPathChain;
-
+    public static boolean useTranslational = true, useCentripetal = true, useHeading = true, useDrive = true;
+    public static double holdPointTranslationalScaling = 0.8, holdPointHeadingScaling = 1;
     private final int BEZIER_CURVE_BINARY_STEP_LIMIT = 10, DELTA_POSE_RECORD_LIMIT = 8;
-
+    private final HardwareMap hardwareMap;
+    private final ArrayList<Pose2d> poseHistory = new ArrayList<>();
+    private final ArrayList<Pose2d> deltaPoses = new ArrayList<>();
+    private final ArrayList<Pose2d> deltaDeltaPoses = new ArrayList<>();
+    private final PIDFController smallTranslationalPIDF = new PIDFController(FollowerConstants.smallTranslationalPIDFCoefficients);
+    private final PIDFController smallTranslationalIntegral = new PIDFController(FollowerConstants.smallTranslationalIntegral);
+    private final PIDFController largeTranslationalPIDF = new PIDFController(FollowerConstants.largeTranslationalPIDFCoefficients);
+    private final PIDFController largeTranslationalIntegral = new PIDFController(FollowerConstants.largeTranslationalIntegral);
+    private final PIDFController smallHeadingPIDF = new PIDFController(FollowerConstants.smallHeadingPIDFCoefficients);
+    private final PIDFController largeHeadingPIDF = new PIDFController(FollowerConstants.largeHeadingPIDFCoefficients);
+    private final PIDFController smallDrivePIDF = new PIDFController(FollowerConstants.smallDrivePIDFCoefficients);
+    private final PIDFController largeDrivePIDF = new PIDFController(FollowerConstants.largeDrivePIDFCoefficients);
+    public DcMotorEx leftFront, leftRear, rightFront, rightRear;
+    public PoseUpdater poseUpdater;
+    private List<DcMotorEx> motors;
+    private DriveVectorScaler driveVectorScaler;
+    private Pose2d closestPose;
+    private Path currentPath;
+    private PathChain currentPathChain;
     private int chainIndex;
-
     private long[] pathStartTimes;
-
     private boolean followingPathChain, holdingPosition, isBusy, auto = true, reachedParametricPathEnd;
-
     private double maxPower = 1, previousSmallTranslationalIntegral, previousLargeTranslationalIntegral;
-
     private long reachedParametricPathEndTime;
-
     private double[] drivePowers;
     private int collisionCounts = 0;
     private boolean isCollision = false;
     private boolean isFirstCollision = false;
-
-    private Vector[] teleOpMovementVectors = new Vector[] {new Vector(0,0), new Vector(0,0), new Vector(0,0)};
-
-    private ArrayList<Pose2d> poseHistory = new ArrayList<>();
-    private ArrayList<Pose2d> deltaPoses = new ArrayList<>();
-    private ArrayList<Pose2d> deltaDeltaPoses = new ArrayList<>();
-
+    private Vector[] teleOpMovementVectors = new Vector[]{new Vector(0, 0), new Vector(0, 0), new Vector(0, 0)};
     private Pose2d averageDeltaPose, averagePreviousDeltaPose, averageDeltaDeltaPose;
-
-    private PIDFController smallTranslationalPIDF = new PIDFController(FollowerConstants.smallTranslationalPIDFCoefficients),
-            smallTranslationalIntegral = new PIDFController(FollowerConstants.smallTranslationalIntegral),
-            largeTranslationalPIDF = new PIDFController(FollowerConstants.largeTranslationalPIDFCoefficients),
-            largeTranslationalIntegral = new PIDFController(FollowerConstants.largeTranslationalIntegral),
-            smallHeadingPIDF = new PIDFController(FollowerConstants.smallHeadingPIDFCoefficients),
-            largeHeadingPIDF = new PIDFController(FollowerConstants.largeHeadingPIDFCoefficients),
-            smallDrivePIDF = new PIDFController(FollowerConstants.smallDrivePIDFCoefficients),
-            largeDrivePIDF = new PIDFController(FollowerConstants.largeDrivePIDFCoefficients);
-
     private Vector smallTranslationalIntegralVector, largeTranslationalIntegralVector;
-
-    public static boolean useTranslational = true, useCentripetal = true, useHeading = true, useDrive = true;
-
-    public static double holdPointTranslationalScaling = 0.8, holdPointHeadingScaling = 0.8;
 
     /**
      * This creates a new follower given a hardware map
@@ -117,12 +94,44 @@ public class Follower {
      * in autonomous or teleop
      *
      * @param hardwareMap hardware map required
-     * @param setAuto sets whether or not the follower is being used in autonomous or teleop
+     * @param setAuto     sets whether or not the follower is being used in autonomous or teleop
      */
     public Follower(HardwareMap hardwareMap, boolean setAuto) {
         this.hardwareMap = hardwareMap;
         setAuto(setAuto);
         initialize();
+    }
+
+    public static void drawPoseHistory(Canvas canvas, List<Pose2d> poseHistory) {
+        double[] xPoints = new double[poseHistory.size()];
+        double[] yPoints = new double[poseHistory.size()];
+        for (int i = 0; i < poseHistory.size(); i++) {
+            Pose2d pose = poseHistory.get(i);
+            xPoints[i] = pose.getX();
+            yPoints[i] = pose.getY();
+        }
+        canvas.strokePolyline(xPoints, yPoints);
+    }
+
+    public static void drawPath(Canvas canvas, Path path, double resolution) {
+        int samples = (int) Math.ceil(path.length() / resolution);
+        double[] xPoints = new double[samples];
+        double[] yPoints = new double[samples];
+        for (int i = 0; i < samples; i++) {
+            double t = i / (double) (samples - 1);
+            Point pose = path.getPoint(t);
+            xPoints[i] = pose.getX();
+            yPoints[i] = pose.getY();
+        }
+        canvas.strokePolyline(xPoints, yPoints);
+    }
+
+    public static void drawRobot(Canvas canvas, Pose2d pose, double robotRadius) {
+        canvas.strokeCircle(pose.getX(), pose.getY(), robotRadius);
+        Vector2d v = pose.headingVec().times(robotRadius);
+        double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
+        double x2 = pose.getX() + v.getX(), y2 = pose.getY() + v.getY();
+        canvas.strokeLine(x1, y1, x2, y2);
     }
 
     /**
@@ -153,10 +162,10 @@ public class Follower {
         }
 
         for (int i = 0; i < DELTA_POSE_RECORD_LIMIT; i++) {
-            deltaPoses.add(new Pose2d(0,0,0));
+            deltaPoses.add(new Pose2d(0, 0, 0));
         }
-        for (int i = 0; i < DELTA_POSE_RECORD_LIMIT/2; i++) {
-            deltaDeltaPoses.add(new Pose2d(0,0,0));
+        for (int i = 0; i < DELTA_POSE_RECORD_LIMIT / 2; i++) {
+            deltaDeltaPoses.add(new Pose2d(0, 0, 0));
         }
         calculateAverageDeltaPoses();
     }
@@ -219,11 +228,10 @@ public class Follower {
         poseUpdater.setStartingPose(pose);
     }
 
-
     /**
      * This holds a point
      *
-     * @param point the point to stay at
+     * @param point   the point to stay at
      * @param heading the direction to face
      */
     public void holdPoint(BezierPoint point, double heading) {
@@ -235,7 +243,6 @@ public class Follower {
         currentPath.setConstantHeadingInterpolation(heading);
         closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), 1);
     }
-
 
     /**
      * This follows a path
@@ -398,23 +405,23 @@ public class Follower {
      * Calculates the average delta poses
      */
     public void calculateAverageDeltaPoses() {
-        averageDeltaPose = new Pose2d(0,0,0);
-        averagePreviousDeltaPose = new Pose2d(0,0,0);
+        averageDeltaPose = new Pose2d(0, 0, 0);
+        averagePreviousDeltaPose = new Pose2d(0, 0, 0);
 
-        for (int i = 0; i < deltaPoses.size()/2; i++) {
+        for (int i = 0; i < deltaPoses.size() / 2; i++) {
             averageDeltaPose.plus(deltaPoses.get(i));
         }
-        averageDeltaPose.div(deltaPoses.size()/2);
+        averageDeltaPose.div(deltaPoses.size() / 2);
 
-        for (int i = deltaPoses.size()/2; i < deltaPoses.size(); i++) {
+        for (int i = deltaPoses.size() / 2; i < deltaPoses.size(); i++) {
             averagePreviousDeltaPose.plus(deltaPoses.get(i));
         }
-        averagePreviousDeltaPose.div(deltaPoses.size()/2);
+        averagePreviousDeltaPose.div(deltaPoses.size() / 2);
 
         deltaDeltaPoses.add(averageDeltaPose.minus(averagePreviousDeltaPose));
         deltaDeltaPoses.remove(deltaDeltaPoses.size() - 1);
 
-        averageDeltaDeltaPose = new Pose2d(0,0,0);
+        averageDeltaDeltaPose = new Pose2d(0, 0, 0);
 
         for (int i = 0; i < deltaDeltaPoses.size(); i++) {
             averageDeltaDeltaPose.plus(deltaDeltaPoses.get(i));
@@ -487,7 +494,7 @@ public class Follower {
      * Sets the correctional, heading, and drive movement vectors for teleop enhancements
      */
     public void setMovementVectors(Vector correctional, Vector heading, Vector drive) {
-        teleOpMovementVectors = new Vector[] {correctional, heading, drive};
+        teleOpMovementVectors = new Vector[]{correctional, heading, drive};
     }
 
     public void setMovementPowers(double lfPower, double lrPower, double rfPower, double rrPower) {
@@ -499,14 +506,14 @@ public class Follower {
 
     /**
      * This returns a Vector in the direction the robot must go to move along the path
-     *
+     * <p>
      * Note: This vector is clamped to be at most 1 in magnitude
      *
      * @return returns the drive vector
      */
     public Vector getDriveVector() {
         if (!useDrive) return new Vector();
-        if (followingPathChain && chainIndex < currentPathChain.size()-1) {
+        if (followingPathChain && chainIndex < currentPathChain.size() - 1) {
             return new Vector(1, currentPath.getClosestPointTangentVector().getTheta());
         }
 
@@ -546,7 +553,7 @@ public class Follower {
         Vector forwardHeadingVector = new Vector(1.0, poseUpdater.getPose().getHeading());
         double forwardVelocity = MathFunctions.dotProduct(forwardHeadingVector, velocity);
         double forwardDistanceToGoal = MathFunctions.dotProduct(forwardHeadingVector, distanceToGoalVector);
-        Vector lateralHeadingVector = new Vector(1.0, poseUpdater.getPose().getHeading()-Math.PI/2);
+        Vector lateralHeadingVector = new Vector(1.0, poseUpdater.getPose().getHeading() - Math.PI / 2);
         double lateralVelocity = MathFunctions.dotProduct(lateralHeadingVector, velocity);
         double lateralDistanceToGoal = MathFunctions.dotProduct(lateralHeadingVector, distanceToGoalVector);
 
@@ -560,7 +567,7 @@ public class Follower {
     /**
      * This returns a Vector in the direction of the robot that contains the heading correction
      * as its magnitude
-     *
+     * <p>
      * Note: This vector is clamped to be at most 1 in magnitude
      *
      * @return returns the heading vector
@@ -585,7 +592,7 @@ public class Follower {
     /**
      * This returns a Vector in the direction the robot must go to account for both translational
      * error as well as centripetal force.
-     *
+     * <p>
      * Note: This vector is clamped to be at most 1 in magnitude
      *
      * @return returns the corrective vector
@@ -605,7 +612,7 @@ public class Follower {
     /**
      * This returns a Vector in the direction the robot must go to account for only translational
      * error
-     *
+     * <p>
      * Note: This vector is clamped to be at most 1 in magnitude
      *
      * @return returns the translational vector
@@ -671,7 +678,7 @@ public class Follower {
     /**
      * This returns a Vector in the direction the robot must go to account for only centripetal
      * force
-     *
+     * <p>
      * Note: This vector is clamped to be between [0, 1] in magnitude
      *
      * @return returns the centripetal vector
@@ -687,7 +694,7 @@ public class Follower {
             curvature = (Math.pow(Math.sqrt(1 + Math.pow(yPrime, 2)), 3)) / (yDoublePrime);
         }
         if (Double.isNaN(curvature)) return new Vector();
-        return new Vector(MathFunctions.clamp(FollowerConstants.centrifugalScaling * FollowerConstants.mass * Math.pow(MathFunctions.dotProduct(poseUpdater.getVelocity(), MathFunctions.normalizeVector(currentPath.getClosestPointTangentVector())), 2) * curvature,-1,1), currentPath.getClosestPointTangentVector().getTheta() + Math.PI/2 * MathFunctions.getSign(currentPath.getClosestPointNormalVector().getTheta()));
+        return new Vector(MathFunctions.clamp(FollowerConstants.centrifugalScaling * FollowerConstants.mass * Math.pow(MathFunctions.dotProduct(poseUpdater.getVelocity(), MathFunctions.normalizeVector(currentPath.getClosestPointTangentVector())), 2) * curvature, -1, 1), currentPath.getClosestPointTangentVector().getTheta() + Math.PI / 2 * MathFunctions.getSign(currentPath.getClosestPointNormalVector().getTheta()));
     }
 
     /**
@@ -716,7 +723,7 @@ public class Follower {
      */
     public boolean atParametricEnd() {
         if (followingPathChain) {
-            if (chainIndex == currentPathChain.size()-1) return currentPath.isAtParametricEnd();
+            if (chainIndex == currentPathChain.size() - 1) return currentPath.isAtParametricEnd();
             return false;
         }
         return currentPath.isAtParametricEnd();
@@ -746,37 +753,5 @@ public class Follower {
 
     public PathBuilder pathBuilder() {
         return new PathBuilder();
-    }
-
-    public static void drawPoseHistory(Canvas canvas, List<Pose2d> poseHistory) {
-        double[] xPoints = new double[poseHistory.size()];
-        double[] yPoints = new double[poseHistory.size()];
-        for (int i = 0; i < poseHistory.size(); i++) {
-            Pose2d pose = poseHistory.get(i);
-            xPoints[i] = pose.getX();
-            yPoints[i] = pose.getY();
-        }
-        canvas.strokePolyline(xPoints, yPoints);
-    }
-
-    public static void drawPath(Canvas canvas, Path path, double resolution) {
-        int samples = (int) Math.ceil(path.length() / resolution);
-        double[] xPoints = new double[samples];
-        double[] yPoints = new double[samples];
-        for (int i = 0; i < samples; i++) {
-            double t = i / (double) (samples - 1);
-            Point pose = path.getPoint(t);
-            xPoints[i] = pose.getX();
-            yPoints[i] = pose.getY();
-        }
-        canvas.strokePolyline(xPoints, yPoints);
-    }
-
-    public static void drawRobot(Canvas canvas, Pose2d pose, double robotRadius) {
-        canvas.strokeCircle(pose.getX(), pose.getY(), robotRadius);
-        Vector2d v = pose.headingVec().times(robotRadius);
-        double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
-        double x2 = pose.getX() + v.getX(), y2 = pose.getY() + v.getY();
-        canvas.strokeLine(x1, y1, x2, y2);
     }
 }

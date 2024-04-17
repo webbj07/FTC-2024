@@ -2,8 +2,6 @@ package org.firstinspires.ftc.team4100worlds.commands;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 
@@ -13,12 +11,12 @@ import org.firstinspires.ftc.teamcode.util.NanoClock;
 @Config
 public class ProfiledLiftCommand extends CommandBase {
     private final Lift lift;
+    private final NanoClock clock = NanoClock.system();
     private PIDController liftController;
     private MotionProfile profile;
     private int targetPosition;
     private int currentPosition;
     private boolean isRelative = false;
-    private final NanoClock clock = NanoClock.system();
     private double profileStart;
 
     public ProfiledLiftCommand(Lift lift, int targetPosition) {
@@ -51,7 +49,7 @@ public class ProfiledLiftCommand extends CommandBase {
 //
 //        liftController.reset();
 //        profileStart = clock.seconds();
-        lift.gotoPos(targetPosition);
+        lift.setPosition(targetPosition);
     }
 
     @Override
@@ -68,10 +66,7 @@ public class ProfiledLiftCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (Math.abs(targetPosition - lift.getPosition()) <= Lift.LIFT_TOLERANCE) {
-//            lift.setPower(0);
-            return true;
-        }
-        return false;
+        //            lift.setPower(0);
+        return Math.abs(targetPosition - lift.getPosition()) <= Lift.LIFT_TOLERANCE;
     }
 }

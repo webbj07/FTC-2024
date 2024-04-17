@@ -4,13 +4,13 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team4100worlds.pedropathing.follower.Follower;
 
-public class DynamicParameticCallback extends CommandBase {
+public class DynamicParametricCallback extends CommandBase {
     private final Follower m_follower;
     private final Runnable m_toRun;
     private final double m_tValue;
     private boolean m_isFinished = false;
 
-    public DynamicParameticCallback(Follower follower, Runnable toRun, double tValue) {
+    public DynamicParametricCallback(Follower follower, Runnable toRun, double tValue) {
         m_follower = follower;
         m_toRun = toRun;
         m_tValue = tValue;

@@ -1,20 +1,16 @@
 package org.firstinspires.ftc.team4100worlds.tuning;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Config
-@TeleOp
 public final class ParallelSlidesVelTuner extends LinearOpMode {
     public static double RUNTIME = 2;
     private DcMotorEx leftSlide, rightSlide;
     private double maxVel = 0;
-    private ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() {

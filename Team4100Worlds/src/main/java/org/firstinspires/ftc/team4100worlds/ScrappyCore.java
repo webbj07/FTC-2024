@@ -3,8 +3,8 @@ package org.firstinspires.ftc.team4100worlds;
 import com.arcrobotics.ftclib.command.Robot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.team4100worlds.pedropathing.follower.Follower;
 import org.firstinspires.ftc.team4100worlds.commands.BulkCacheHandler;
+import org.firstinspires.ftc.team4100worlds.pedropathing.follower.Follower;
 import org.firstinspires.ftc.team4100worlds.subsystem.Conveyor;
 import org.firstinspires.ftc.team4100worlds.subsystem.Intake;
 import org.firstinspires.ftc.team4100worlds.subsystem.Lift;

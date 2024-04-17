@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team4100worlds.autonomous.ScrappyAutoBase;
-import org.firstinspires.ftc.team4100worlds.pedropathing.follower.Follower;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierLine;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Path;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
@@ -19,6 +18,7 @@ public class DriveToAprilTag extends CommandBase {
     private final Pose2d m_offset;
     private Integer m_desiredId = null;
     private Boolean m_isBackCamera = null;
+    private Point m_tagPos = null;
 
     public DriveToAprilTag(ScrappyAutoBase base, Pose2d offset) {
         m_base = base;
@@ -45,7 +45,7 @@ public class DriveToAprilTag extends CommandBase {
         for (int i = 0; i < 3; i++) {
             List<AprilTagDetection> detectionList = m_base.getAprilTagDetections(m_isBackCamera);
             for (AprilTagDetection detection : detectionList) {
-                if (m_desiredId == null || detection.id == m_desiredId) {
+                if (m_desiredId == null || m_desiredId == detection.id) {
                     Pose2d estimatedPos = AprilTagLocalization.getRobotPositionFromTag(detection, robotHeading, m_isBackCamera);
                     avgX += estimatedPos.getX();
                     avgY += estimatedPos.getY();
@@ -61,15 +61,18 @@ public class DriveToAprilTag extends CommandBase {
             m_base.robot.m_drive.poseUpdater.setCurrentPoseUsingOffset(new Pose2d(avgX, avgY, robotHeading));
         }
 
-        Vector2d tagPos = AprilTagLocalization.getTagPosition(m_desiredId != null ? m_desiredId : 1);
+        Vector2d tagVec = AprilTagLocalization.getTagPosition(m_desiredId != null ? m_desiredId : 1);
+        m_tagPos = new Point(tagVec.getX() + m_offset.getX(), tagVec.getY() + m_offset.getY(), Point.CARTESIAN);
 
         Path path = new Path(new BezierLine(
-                new Point(avgX, avgY, Point.CARTESIAN),
-                new Point(tagPos.getX() + m_offset.getX(), tagPos.getY() + m_offset.getY(), Point.CARTESIAN)
+            new Point(avgX, avgY, Point.CARTESIAN),
+            m_tagPos
         ));
         path.setConstantHeadingInterpolation(Math.PI);
+        path.setPathEndTValue(0.9);
+        path.setPathEndTimeout(1);
 
-        m_base.robot.m_drive.setMaxPower(0.5);
+        m_base.robot.m_drive.setMaxPower(0.35);
         m_base.robot.m_drive.followPath(path);
     }
 
@@ -81,7 +84,6 @@ public class DriveToAprilTag extends CommandBase {
     public boolean isFinished() {
         if (!m_base.robot.m_drive.isBusy()) {
             m_base.robot.m_drive.setMaxPower(1);
-            m_base.robot.m_drive.poseUpdater.resetOffset();
             return true;
         }
 

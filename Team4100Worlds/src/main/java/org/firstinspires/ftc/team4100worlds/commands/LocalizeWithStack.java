@@ -2,22 +2,17 @@ package org.firstinspires.ftc.team4100worlds.commands;
 
 import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.FRONT_DISTANCE_SENSOR_POSITION;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team4100worlds.autonomous.ScrappyAutoBase;
-import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.BezierLine;
-import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Path;
-import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Point;
 
 import java.util.ArrayList;
 
 public class LocalizeWithStack extends CommandBase {
-    public static double DRIVE_ERROR_THRESHOLD = 4;
-    public static double STRAFE_ERROR_THRESHOLD = 4;
-    public static int STRAFE_ERROR_ATTEMPTS = 6;
-    public static int STRAFE_ERROR_ATTEMPTS_MIN = 3;
+    public static double DRIVE_ERROR_THRESHOLD = 2;
+    public static double STRAFE_ERROR_THRESHOLD = 2;
+    public static int STRAFE_ERROR_ATTEMPTS = 10;
+    public static int STRAFE_ERROR_ATTEMPTS_MIN = 10;
     private final ScrappyAutoBase m_base;
     private boolean m_finished = false;
 
@@ -36,6 +31,11 @@ public class LocalizeWithStack extends CommandBase {
             if (error != null) {
                 errorList.add(error);
             }
+        }
+
+        if (attempts >= STRAFE_ERROR_ATTEMPTS) {
+            m_finished = true;
+            return;
         }
 
         double strafeError = 0;

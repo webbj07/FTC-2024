@@ -1,30 +1,28 @@
 package org.firstinspires.ftc.team4100worlds.pedropathing.localization;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
-import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Vector;
 import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.MathFunctions;
+import org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PoseUpdater {
-    private HardwareMap hardwareMap;
+    private final HardwareMap hardwareMap;
 
-    private IMU imu;
+    private final IMU imu;
 
-    private TwoWheelTrackingLocalizer localizer;
-
-    private Pose2d startingPose = new Pose2d(0,0,0);
-
+    private final TwoWheelTrackingLocalizer localizer;
+    private final ElapsedTime imuTimer = new ElapsedTime();
+    private Pose2d startingPose = new Pose2d(0, 0, 0);
     private Pose2d previousPose = startingPose;
-
     private double xOffset = 0, yOffset = 0, headingOffset = 0;
-
     private long previousPoseTime, currentPoseTime;
 
     /**
@@ -42,12 +40,18 @@ public class PoseUpdater {
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         localizer = new TwoWheelTrackingLocalizer(hardwareMap, imu);
+//        localizer = new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels);
+        imuTimer.reset();
     }
 
     /**
      * Updates the robot's pose
      */
     public void update() {
+//        if (imuTimer.seconds() >= 1) {
+//            resetHeadingToIMU();
+//            imuTimer.reset();
+//        }
         previousPose = applyOffset(localizer.getPoseEstimate());
         previousPoseTime = currentPoseTime;
         currentPoseTime = System.nanoTime();
@@ -68,7 +72,6 @@ public class PoseUpdater {
     }
 
     /**
-     *
      * This resets the current pose to a specified pose, using offsets to avoid having to reset using roadrunners pose reset
      *
      * @param set this is the pose we want to set the current pose to, using offsets
@@ -80,28 +83,36 @@ public class PoseUpdater {
         setHeadingOffset(MathFunctions.getTurnDirection(currentPose.getHeading(), set.getHeading()) * MathFunctions.getSmallestAngleDifference(currentPose.getHeading(), set.getHeading()));
     }
 
-    public void setXOffset(double offset) {
-        xOffset = offset;
-    }
-
-    public void setYOffset(double offset) {
-        yOffset = offset;
-    }
-
-    public void setHeadingOffset(double offset) {
-        headingOffset = offset;
+    public Pose2d getOffset() {
+        return new Pose2d(xOffset, yOffset, headingOffset);
     }
 
     public double getXOffset() {
         return xOffset;
     }
 
+    public void setXOffset(double offset) {
+        xOffset = offset;
+    }
+
+    public void setRelXOffset(double relOffset) {
+        xOffset = xOffset + relOffset;
+    }
+
     public double getYOffset() {
         return yOffset;
     }
 
+    public void setYOffset(double offset) {
+        yOffset = offset;
+    }
+
     public double getHeadingOffset() {
         return headingOffset;
+    }
+
+    public void setHeadingOffset(double offset) {
+        headingOffset = offset;
     }
 
     public Pose2d applyOffset(Pose2d pose) {
@@ -159,7 +170,7 @@ public class PoseUpdater {
     public Vector getVelocity() {
         Vector velocity = new Vector();
         velocity.setOrthogonalComponents(getPose().getX() - previousPose.getX(), getPose().getY() - previousPose.getY());
-        velocity.setMagnitude(MathFunctions.distance(getPose(), previousPose) / ((currentPoseTime-previousPoseTime)/Math.pow(10.0, 9)));
+        velocity.setMagnitude(MathFunctions.distance(getPose(), previousPose) / ((currentPoseTime - previousPoseTime) / Math.pow(10.0, 9)));
         return velocity;
     }
 
@@ -169,12 +180,12 @@ public class PoseUpdater {
      * @return returns the velocity of the robot
      */
     public double getAngularVelocity() {
-        return MathFunctions.getTurnDirection(previousPose.getHeading(), getPose().getHeading()) * MathFunctions.getSmallestAngleDifference(getPose().getHeading(), previousPose.getHeading()) / ((currentPoseTime-previousPoseTime)/Math.pow(10.0, 9));
+        return MathFunctions.getTurnDirection(previousPose.getHeading(), getPose().getHeading()) * MathFunctions.getSmallestAngleDifference(getPose().getHeading(), previousPose.getHeading()) / ((currentPoseTime - previousPoseTime) / Math.pow(10.0, 9));
     }
 
-//    /**
-//     * This resets the heading of the robot to the IMU's heading
-//     */
+    /**
+     * This resets the heading of the robot to the IMU's heading
+     */
 //    public void resetHeadingToIMU() {
 //        localizer.resetHeading(getNormalizedIMUHeading() + startingPose.getHeading());
 //    }
@@ -185,6 +196,6 @@ public class PoseUpdater {
      * @return returns the normalized IMU heading
      */
     public double getNormalizedIMUHeading() {
-        return MathFunctions.normalizeAngle(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
     }
 }

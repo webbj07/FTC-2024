@@ -29,20 +29,23 @@
 
 package org.firstinspires.ftc.team4100worlds.tests;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team4100worlds.util.MB1242;
 
-@TeleOp
-public class MB1242Test extends LinearOpMode {
+public class DistanceTest extends LinearOpMode {
     private MB1242 front, left, right;
+    private Rev2mDistanceSensor leftBack, rightBack;
 
-    @Override public void runOpMode() {
+    @Override
+    public void runOpMode() {
         front = hardwareMap.get(MB1242.class, "FrontDistance");
         left = hardwareMap.get(MB1242.class, "LeftDistance");
         right = hardwareMap.get(MB1242.class, "RightDistance");
+        leftBack = hardwareMap.get(Rev2mDistanceSensor.class, "DSL");
+        rightBack = hardwareMap.get(Rev2mDistanceSensor.class, "DSR");
 
         waitForStart();
 
@@ -58,6 +61,8 @@ public class MB1242Test extends LinearOpMode {
             telemetry.addData("front", "%.4f (in)", front.getDistance(DistanceUnit.INCH));
             telemetry.addData("left", "%.4f (in)", left.getDistance(DistanceUnit.INCH));
             telemetry.addData("right", "%.4f (in)", right.getDistance(DistanceUnit.INCH));
+            telemetry.addData("leftBack", "%.4f (in)", leftBack.getDistance(DistanceUnit.INCH));
+            telemetry.addData("rightBack", "%.4f (in)", rightBack.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
     }

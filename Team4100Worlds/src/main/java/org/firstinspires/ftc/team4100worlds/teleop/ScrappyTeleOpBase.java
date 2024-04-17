@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.team4100worlds.ScrappyCore;
 import org.firstinspires.ftc.team4100worlds.ScrappyConstants;
+import org.firstinspires.ftc.team4100worlds.ScrappyCore;
 
 public abstract class ScrappyTeleOpBase extends CommandOpMode {
     private final ScrappyConstants.AllianceType m_allianceType;

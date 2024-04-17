@@ -29,9 +29,9 @@ public class Intake extends SubsystemBase {
         m_intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         m_intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        this.raise();
-        this.grab();
-        this.stop();
+//        this.raise();
+//        this.grab();
+//        this.stop();
     }
 
     public void setExRelPos(double pos) {
@@ -90,12 +90,12 @@ public class Intake extends SubsystemBase {
         m_intake.setPower(0);
     }
 
-    public void setIntakeSpeed(double speed) {
-        m_intakeSpeed = Range.clip(speed, 0, 1);
-    }
-
     public double getIntakeSpeed() {
         return m_intakeSpeed;
+    }
+
+    public void setIntakeSpeed(double speed) {
+        m_intakeSpeed = Range.clip(speed, 0, 1);
     }
 
     public double getIntakePower() {

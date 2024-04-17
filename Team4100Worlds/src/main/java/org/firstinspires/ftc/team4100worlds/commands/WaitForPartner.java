@@ -6,33 +6,39 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.team4100worlds.subsystem.Sensors;
 
 public class WaitForPartner extends CommandBase {
+    public static final double WAIT_THRESHOLD = 25;
     private final Sensors m_sensors;
     private final boolean m_isLeft;
-    private ElapsedTime m_timer = new ElapsedTime();
     private boolean m_isFinished = false;
+    private ElapsedTime m_autoTime = null;
 
     public WaitForPartner(Sensors sensors, boolean isLeft) {
         m_sensors = sensors;
         m_isLeft = isLeft;
-        m_timer.reset();
+    }
+
+    public WaitForPartner(Sensors sensors, boolean isLeft, ElapsedTime autoTime) {
+        m_sensors = sensors;
+        m_isLeft = isLeft;
+        m_autoTime = autoTime;
     }
 
     @Override
     public void execute() {
-        m_sensors.pingAll();
-        while (m_timer.milliseconds() < 100) {}
+//        if (m_autoTime != null && m_autoTime.seconds() >= WAIT_THRESHOLD) {
+//            m_isFinished = true;
+//            return;
+//        }
 
         if (m_isLeft) {
-            if (m_sensors.getFrontDistance() > 20) {
+            if (m_sensors.getLeftDistanceAsync() > 37) {
                 m_isFinished = true;
             }
         } else {
-            if (m_sensors.getFrontDistance() > 21) {
+            if (m_sensors.getRightDistanceAsync() > 37) {
                 m_isFinished = true;
             }
         }
-
-        m_timer.reset();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team4100worlds.pedropathing.pathgeneration;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 public class Point {
     /**
@@ -24,6 +25,10 @@ public class Point {
         setCoordinates(rOrX, thetaOrY, identifier);
     }
 
+    public Point(double x, double y) {
+        setCoordinates(x, y, CARTESIAN);
+    }
+
     /**
      * This creates a new Point from a Pose2d
      *
@@ -31,6 +36,15 @@ public class Point {
      */
     public Point(Pose2d pose) {
         setCoordinates(pose.getX(), pose.getY(), CARTESIAN);
+    }
+
+    /**
+     * This creates a new Point from a Vector2d
+     *
+     * @param vector the vector
+     */
+    public Point(Vector2d vector) {
+        setCoordinates(vector.getX(), vector.getY(), CARTESIAN);
     }
 
     /**
@@ -109,6 +123,16 @@ public class Point {
         } else {
             return new double[]{r, (2*Math.PI) + Math.atan(y / x)};
         }
+    }
+
+    public Point plus(Point point) {
+        setCoordinates(this.getX() + point.getX(), this.getY() + point.getY(), CARTESIAN);
+        return this;
+    }
+
+    public Point minus(Point point) {
+        setCoordinates(this.getX() - point.getX(), this.getY() - point.getY(), CARTESIAN);
+        return this;
     }
 
     /**

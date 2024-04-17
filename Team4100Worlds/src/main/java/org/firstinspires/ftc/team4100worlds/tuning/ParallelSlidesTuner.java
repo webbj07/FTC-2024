@@ -4,11 +4,9 @@ import static org.firstinspires.ftc.team4100worlds.subsystem.Lift.MAX_ACCEL;
 import static org.firstinspires.ftc.team4100worlds.subsystem.Lift.MAX_VEL;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -19,18 +17,18 @@ import org.firstinspires.ftc.teamcode.util.profiling.MotionProfile;
 import org.firstinspires.ftc.teamcode.util.profiling.MotionProfileGenerator;
 import org.firstinspires.ftc.teamcode.util.profiling.MotionState;
 
-@Config
-@TeleOp
 public final class ParallelSlidesTuner extends LinearOpMode {
-    enum Mode {
-        DRIVER_MODE,
-        TUNING_MODE
-    }
     public static PIDCoefficients PID = new PIDCoefficients(0, 0, 0);
     public static double kV = 0.000495, kA = 0.0001, kG = 0;
     public static int targetPos = 1700;
     private DcMotorEx leftSlide, rightSlide;
     private PIDController controller;
+
+    private static MotionProfile generateProfile(boolean movingUp) {
+        MotionState start = new MotionState(movingUp ? 0 : targetPos, 0, 0, 0);
+        MotionState goal = new MotionState(movingUp ? targetPos : 0, 0, 0, 0);
+        return MotionProfileGenerator.generateSimpleMotionProfile(start, goal, MAX_VEL, MAX_ACCEL, 0);
+    }
 
     @Override
     public void runOpMode() {
@@ -125,9 +123,8 @@ public final class ParallelSlidesTuner extends LinearOpMode {
         }
     }
 
-    private static MotionProfile generateProfile(boolean movingUp) {
-        MotionState start = new MotionState(movingUp ? 0 : targetPos, 0, 0, 0);
-        MotionState goal = new MotionState(movingUp ? targetPos : 0, 0, 0, 0);
-        return MotionProfileGenerator.generateSimpleMotionProfile(start, goal, MAX_VEL, MAX_ACCEL, 0);
+    enum Mode {
+        DRIVER_MODE,
+        TUNING_MODE
     }
 }

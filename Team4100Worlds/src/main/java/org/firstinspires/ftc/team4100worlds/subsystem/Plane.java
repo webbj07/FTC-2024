@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.team4100worlds.subsystem;
 
-import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Plane.LAUNCH;
 import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Plane.IDLE;
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Plane.LAUNCH;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -30,15 +30,15 @@ public class Plane extends SubsystemBase {
         m_plane.setPosition(IDLE + pos);
     }
 
-    public void setPos(double pos) {
-        m_plane.setPosition(pos);
-    }
-
     public void setRelPos(double pos) {
         m_plane.setPosition(m_plane.getPosition() + pos);
     }
 
     public double getPos() {
         return m_plane.getPosition();
+    }
+
+    public void setPos(double pos) {
+        m_plane.setPosition(pos);
     }
 }

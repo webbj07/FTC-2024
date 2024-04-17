@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.team4100worlds.subsystem;
 
-import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.EXTENSION_MIN;
-import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.EXTENSION_MAX;
 import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.DROPPER_IN;
 import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.DROPPER_OUT;
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.EXTENSION_MAX;
+import static org.firstinspires.ftc.team4100worlds.ScrappyConstants.Positions.Outtake.EXTENSION_MIN;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -16,7 +16,7 @@ public class Outtake extends SubsystemBase {
         m_dropper = hwMap.get(Servo.class, "Dropper");
         m_leftExtend = hwMap.get(Servo.class, "ExtendL");
 
-        m_leftExtend.setPosition(EXTENSION_MIN);
+//        m_leftExtend.setPosition(EXTENSION_MIN);
     }
 
     public double getExPos() {
@@ -63,15 +63,15 @@ public class Outtake extends SubsystemBase {
         m_dropper.setPosition(DROPPER_IN + pos);
     }
 
-    public void setDropperPos(double pos) {
-        m_dropper.setPosition(pos);
-    }
-
     public void setRelDropperPos(double pos) {
         m_dropper.setPosition(m_dropper.getPosition() + pos);
     }
 
     public double getDropperPos() {
         return m_dropper.getPosition();
+    }
+
+    public void setDropperPos(double pos) {
+        m_dropper.setPosition(pos);
     }
 }
