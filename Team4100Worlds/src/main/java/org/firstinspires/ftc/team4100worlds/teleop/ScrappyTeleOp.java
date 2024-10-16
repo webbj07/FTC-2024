@@ -19,7 +19,7 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
     private final ElapsedTime elapsedTime = new ElapsedTime();
     private final PIDController headingController = new PIDController(0, 0, 0);
     private double m_headingOffset = Math.PI;
-    private GamepadEx m_driverOne, m_driverTwo;
+    private GamepadEx gamepad1Ex, gamepad2Ex;
     private int m_slideTopPos = 0;
     private double m_speed = 1;
     private boolean isFieldCentric = false;
@@ -32,174 +32,33 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
 
     @Override
     public void initTeleOp() {
-        imu.resetYaw();
-        headingController.setSetPoint(Math.PI);
+        gamepad1Ex = new GamepadEx(gamepad1);
+        gamepad2Ex = new GamepadEx(gamepad2);
+        //
+        //              Gamepad 1
+        //
+        gamepad1Ex.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                new InstantCommand(robot.intake::toggleGrabber)
+        );
+        gamepad1Ex.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+                new InstantCommand(robot.intake::toggleRotation)
+        );
+        gamepad1Ex.getGamepadButton(GamepadKeys.Button.X).whenPressed(
+                new InstantCommand(robot.extendo::toggleExtended)
+        );
+        gamepad1Ex.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
+                new InstantCommand(robot.arm::toggleGrab)
+        );
+        //
+        //              Gamepad 2
+        //
+//        gamepad2Ex.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+//                new InstantCommand(robot.lift::run)
+//        );
+//        gamepad2Ex.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+//                new InstantCommand(robot.lift::stop)
+//        );
 
-        schedule(new InstantCommand(() -> {
-            robot.m_intake.raise();
-            robot.m_intake.back();
-            robot.m_intake.stop();
-            robot.m_conveyor.stop();
-            robot.m_outtake.lower();
-            robot.m_outtake.back();
-        }));
-
-        // Initialize gamepads
-        m_driverOne = new GamepadEx(gamepad1);
-        m_driverTwo = new GamepadEx(gamepad2);
-
-        // Initialize slide top position tracker
-        m_slideTopPos = robot.m_lift.getPosition() + 600;
-
-        /* Driver One */
-
-        // Drive Method
-        m_driverOne.getGamepadButton(GamepadKeys.Button.BACK)
-            .whenPressed(new InstantCommand(imu::resetYaw));
-        m_driverOne.getGamepadButton(GamepadKeys.Button.START)
-            .whenPressed(new InstantCommand(() -> isFieldCentric = !isFieldCentric));
-
-        // Speed
-        m_driverOne.getGamepadButton(GamepadKeys.Button.A)
-            .whenPressed(new InstantCommand(() -> m_speed = 0.5));
-        m_driverOne.getGamepadButton(GamepadKeys.Button.B)
-            .whenPressed(new InstantCommand(() -> m_speed = 1));
-
-        // Lift
-        m_driverOne.getGamepadButton(GamepadKeys.Button.X)
-            .whenPressed(new SequentialCommandGroup(
-                new InstantCommand(() -> robot.m_lift.setPosition(0)),
-                new WaitUntilCommand(() -> robot.m_lift.isWithinTolerance(0)),
-                new InstantCommand(robot.m_outtake::lower)
-            ));
-
-        m_driverOne.getGamepadButton(GamepadKeys.Button.Y)
-            .whenPressed(new ParallelCommandGroup(
-                new InstantCommand(() -> robot.m_lift.setPosition(m_slideTopPos)),
-                new InstantCommand(robot.m_outtake::extend)
-            ));
-        m_driverOne.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-            .whenPressed(new InstantCommand(() -> {
-                if (robot.m_lift.getTargetPosition() <= 250) {
-                    robot.m_outtake.lower();
-                }
-
-                robot.m_lift.setPositionRel(-160);
-            }));
-        m_driverOne.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-            .whenPressed(new InstantCommand(() -> {
-                if (robot.m_lift.getTargetPosition() > m_slideTopPos) {
-                    m_slideTopPos = robot.m_lift.getTargetPosition();
-                }
-
-                if (robot.m_lift.getTargetPosition() >= 250) {
-                    robot.m_outtake.extend();
-
-                } else {
-                    robot.m_outtake.lower();
-                }
-
-                robot.m_lift.setPositionRel(160);
-            }));
-
-        // Intake Grabber
-        m_driverOne.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON)
-            .whenPressed(
-                new SequentialCommandGroup(
-                    new InstantCommand(() -> {
-                        robot.m_intake.lower();
-                        robot.m_intake.back();
-                    }),
-                    new WaitCommand(450),
-                    new InstantCommand(() -> robot.m_intake.grab()),
-                    new WaitCommand(150),
-                    new SequentialCommandGroup(
-                        new InstantCommand(() -> robot.m_intake.backOne()),
-                        new WaitCommand(150),
-                        new InstantCommand(() -> robot.m_intake.backTwo()),
-                        new WaitCommand(150),
-                        new InstantCommand(() -> robot.m_intake.grab())
-                    ),
-                    new WaitCommand(150),
-                    new SequentialCommandGroup(
-                        new InstantCommand(() -> robot.m_intake.backOne()),
-                        new WaitCommand(150),
-                        new InstantCommand(() -> robot.m_intake.backTwo())
-                    )
-                )
-            );
-
-        m_driverOne.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)
-            .whenPressed(new InstantCommand(() -> {
-                robot.m_intake.raise();
-                robot.m_intake.back();
-            }));
-
-        // Dropper
-        m_driverOne.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-            .whenPressed(new InstantCommand(() -> robot.m_outtake.drop()))
-            .whenReleased(new InstantCommand(() -> robot.m_outtake.back()));
-
-        // Conveyor + Intake
-        new Trigger(() -> m_driverOne.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-            .whenActive(new ParallelCommandGroup(
-                new InstantCommand(robot.m_intake::spit),
-                new InstantCommand(robot.m_conveyor::down)
-            ))
-            .whenInactive(new ConditionalCommand(
-                new InstantCommand(),
-                new ParallelCommandGroup(
-                    new InstantCommand(robot.m_intake::stop),
-                    new InstantCommand(robot.m_conveyor::stop)
-                ),
-                () -> robot.m_intake.isSucking()
-            ));
-        new Trigger(() -> m_driverOne.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-            .whenActive(new ParallelCommandGroup(
-                new InstantCommand(robot.m_intake::suck),
-                new InstantCommand(robot.m_conveyor::up)
-            ))
-            .whenInactive(new ConditionalCommand(
-                new InstantCommand(),
-                new ParallelCommandGroup(
-                    new InstantCommand(robot.m_intake::stop),
-                    new InstantCommand(robot.m_conveyor::stop)
-                ),
-                () -> robot.m_intake.isSpitting()
-            ));
-
-        /* Driver Two */
-
-        // Heading Lock
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.A)
-            .whenPressed(new InstantCommand(() -> isHeadingLock = !isHeadingLock));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.Y)
-            .whenPressed(new InstantCommand(() -> {
-                double heading = getCorrectHeading();
-                m_headingOffset = 2 * Math.PI - heading;
-            }));
-
-        // Safety
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-            .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelExtendPos(0.05)));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-            .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelExtendPos(-0.05)));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-            .whenPressed(new InstantCommand(() -> robot.m_plane.setRelPos(-0.05)));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-            .whenPressed(new InstantCommand(() -> robot.m_plane.setRelPos(0.05)));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.BACK)
-            .whenPressed(new InstantCommand(() -> robot.m_lift.reset()));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-            .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelDropperPos(-0.05)));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-            .whenPressed(new InstantCommand(() -> robot.m_outtake.setRelDropperPos(0.05)));
-
-        // Plane
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.X)
-            .whenPressed(new InstantCommand(robot.m_plane::back));
-        m_driverTwo.getGamepadButton(GamepadKeys.Button.B)
-            .whenPressed(new InstantCommand(robot.m_plane::launch));
     }
 
     @Override
@@ -213,10 +72,6 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
         lx *= m_speed;
         rx *= m_speed;
         ly *= m_speed;
-
-        if (robot.m_lift.getPosition() > m_slideTopPos) {
-            m_slideTopPos = robot.m_lift.getPosition();
-        }
 
         if (isFieldCentric) {
             this.driveFieldCentric(gamepad1, m_speed);
@@ -245,10 +100,7 @@ public class ScrappyTeleOp extends ScrappyTeleOpBase {
         telemetry.addData("loop", elapsedTime.milliseconds());
         elapsedTime.reset();
         telemetry.addData("rawHeading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + 180);
-        telemetry.addData("dropper", robot.m_outtake.getDropperPos());
-        telemetry.addData("intakeEX", robot.m_intake.getExPos());
-        telemetry.addData("outtakeEX", robot.m_outtake.getExPos());
-        telemetry.addData("plane", robot.m_plane.getPos());
+
         telemetry.update();
     }
 

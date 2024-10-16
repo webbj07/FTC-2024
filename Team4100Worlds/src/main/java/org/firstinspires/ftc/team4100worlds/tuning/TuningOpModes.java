@@ -36,7 +36,6 @@ public final class TuningOpModes {
         manager.register(metaForClass(ForwardZeroPowerAccelerationTuner.class), ForwardZeroPowerAccelerationTuner.class);
         manager.register(metaForClass(HeadingPIDTuner.class), HeadingPIDTuner.class);
         manager.register(metaForClass(LateralZeroPowerAccelerationTuner.class), LateralZeroPowerAccelerationTuner.class);
-        manager.register(metaForClass(ParallelSlidesTuner.class), ParallelSlidesTuner.class);
         manager.register(metaForClass(ParallelSlidesVelTuner.class), ParallelSlidesVelTuner.class);
         manager.register(metaForClass(StrafeVelocityTuner.class), StrafeVelocityTuner.class);
         manager.register(metaForClass(StraightBackAndForth.class), StraightBackAndForth.class);
@@ -48,7 +47,6 @@ public final class TuningOpModes {
                 ForwardZeroPowerAccelerationTuner.class,
                 HeadingPIDTuner.class,
                 LateralZeroPowerAccelerationTuner.class,
-                ParallelSlidesTuner.class,
                 ParallelSlidesVelTuner.class,
                 StrafeVelocityTuner.class,
                 StraightBackAndForth.class

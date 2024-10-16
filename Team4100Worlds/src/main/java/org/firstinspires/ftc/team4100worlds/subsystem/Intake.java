@@ -1,116 +1,56 @@
 package org.firstinspires.ftc.team4100worlds.subsystem;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Intake extends SubsystemBase {
-    public static double EXTEND_UP_POS = 0.59;
-    public static double EXTEND_DOWN_POS = 0.22;
-    public static double GRABBER_ONE_IDLE_POS = 0.2;
-    public static double GRABBER_TWO_IDLE_POS = 0.55;
-    public static double GRABBER_ONE_GRAB_POS = 0.6;
-    public static double GRABBER_TWO_GRAB_POS = 0.13;
-    private final DcMotorEx m_intake;
-    private final Servo m_intakeEx, m_grabberOne, m_grabberTwo;
-    private double m_intakeSpeed = 1;
+
+    public static final double GRAB_POS = 1.1;
+    public static final double RETRACT_POS = 0.69;
+    public static final double DOWN_POS = 0.71;
+    public static final double UP_POS = 0.05;
+    private final Servo m_grabber;
+    private final Servo m_swivel;
+
+    private boolean grabbed = false;
+    private boolean rotatedOut = false;
 
     public Intake(final HardwareMap hwMap) {
-        m_intake = hwMap.get(DcMotorEx.class, "Intake");
-        m_intakeEx = hwMap.get(Servo.class, "IntakeEx");
-        m_grabberOne = hwMap.get(Servo.class, "Grabber1");
-        m_grabberTwo = hwMap.get(Servo.class, "Grabber2");
-
-        m_intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m_intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-//        this.raise();
-//        this.grab();
-//        this.stop();
+        m_grabber = hwMap.get(Servo.class, "claw");
+        m_swivel = hwMap.get(Servo.class, "tilt");
     }
 
-    public void setExRelPos(double pos) {
-        m_intakeEx.setPosition(m_intakeEx.getPosition() + pos);
-    }
-
-    public double getExPos() {
-        return m_intakeEx.getPosition();
-    }
-
-    public void raise() {
-        m_intakeEx.setPosition(EXTEND_UP_POS);
-    }
-
-    public void lower() {
-        m_intakeEx.setPosition(EXTEND_DOWN_POS);
+    public void getGrabberPosition() {
+        m_grabber.getPosition();
     }
 
     public void grab() {
-        m_grabberOne.setPosition(GRABBER_ONE_GRAB_POS);
-        m_grabberTwo.setPosition(GRABBER_TWO_GRAB_POS);
+        m_grabber.setPosition(GRAB_POS);
     }
 
-    public void grab(double rel) {
-        m_grabberOne.setPosition(GRABBER_ONE_GRAB_POS + rel);
-        m_grabberTwo.setPosition(GRABBER_TWO_GRAB_POS + rel);
+    public void retract() {
+        m_grabber.setPosition(RETRACT_POS);
     }
+    public void toggleGrabber() {
+        if (grabbed){
+            retract();
+            grabbed = false;
+        }else{
+            grab();
+            grabbed = true;
+        }
+    }
+    public void toggleRotation(){
+        if (rotatedOut) {
+            m_swivel.setPosition(0.05);
+            rotatedOut = !rotatedOut;
+        }else{
+            m_swivel.setPosition(0.71);
+            rotatedOut = !rotatedOut;
 
-    public void back() {
-        m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS);
-        m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
+        }
     }
+    public double getRotation(){return m_swivel.getPosition();}
 
-    public void back(double rel) {
-        m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS + rel);
-        m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS + rel);
-    }
-
-    public void backOne() {
-        m_grabberOne.setPosition(GRABBER_ONE_IDLE_POS);
-    }
-
-    public void backTwo() {
-        m_grabberTwo.setPosition(GRABBER_TWO_IDLE_POS);
-    }
-
-    public void suck() {
-        m_intake.setPower(m_intakeSpeed);
-    }
-
-    public void spit() {
-        m_intake.setPower(-m_intakeSpeed);
-    }
-
-    public void stop() {
-        m_intake.setPower(0);
-    }
-
-    public double getIntakeSpeed() {
-        return m_intakeSpeed;
-    }
-
-    public void setIntakeSpeed(double speed) {
-        m_intakeSpeed = Range.clip(speed, 0, 1);
-    }
-
-    public double getIntakePower() {
-        return m_intake.getPower();
-    }
-
-    public double getIntakeCurrent() {
-        return m_intake.getCurrent(CurrentUnit.AMPS);
-    }
-
-    public boolean isSucking() {
-        return m_intake.getPower() > 0;
-    }
-
-    public boolean isSpitting() {
-        return m_intake.getPower() < 0;
-    }
 }

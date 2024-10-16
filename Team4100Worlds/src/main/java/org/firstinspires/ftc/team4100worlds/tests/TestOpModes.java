@@ -37,7 +37,6 @@ public final class TestOpModes {
         manager.register(metaForClass(DistanceTest.class), DistanceTest.class);
         manager.register(metaForClass(LocalizationTest.class), LocalizationTest.class);
         manager.register(metaForClass(PathChainTest.class), PathChainTest.class);
-        manager.register(metaForClass(RobotAutoDriveToAprilTagOmni.class), RobotAutoDriveToAprilTagOmni.class);
         manager.register(metaForClass(SampleRevBlinkinLedDriver.class), SampleRevBlinkinLedDriver.class);
 
         FtcDashboard.getInstance().withConfigRoot(configRoot -> {
@@ -49,7 +48,6 @@ public final class TestOpModes {
                 DistanceTest.class,
                 LocalizationTest.class,
                 PathChainTest.class,
-                RobotAutoDriveToAprilTagOmni.class,
                 SampleRevBlinkinLedDriver.class
             )) {
                 configRoot.putVariable(c.getSimpleName(), ReflectionConfig.createVariableFromClass(c));

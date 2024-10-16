@@ -73,12 +73,7 @@ public abstract class ScrappyAutoBase extends CommandOpMode {
         robot = new ScrappyCore(hardwareMap, m_allianceType, m_allianceSide);
         robot.m_drive.setStartingPose(m_startPose);
 
-        robot.m_intake.raise();
-        robot.m_intake.back();
-        robot.m_intake.stop();
-        robot.m_conveyor.stop();
-        robot.m_outtake.lower();
-        robot.m_outtake.back();
+
 
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
         webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
